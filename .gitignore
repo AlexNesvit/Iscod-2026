@@ -1,0 +1,57 @@
+# OS files (macOS)
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon?
+
+# Node.js
+
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Build directories
+
+build/
+dist/
+destore/
+.out/
+.next/
+
+# Logs
+
+logs
+*.log
+
+# Environment variables
+
+.env
+.env.local
+.env.*.local
+
+# Coverage
+
+coverage/
+
+# VSCode
+
+.vscode/
+.history/
+
+# Docker
+
+*.pid
+*.seed
+*.pid.lock
+docker-compose.override.yml
+
+# Misc
+
+*.swp
+*.swo
+.idea/
+*.iml
