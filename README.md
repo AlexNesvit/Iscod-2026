@@ -7,7 +7,7 @@ Ce projet est une application web permettant :
 - de définir des **alertes personnalisées**,
 - et d’assurer une **authentification sécurisée** des utilisateurs.
 
-L’objectif est de combiner **microservices Node.js**, un **frontend React**, et deux types de bases de données (**MySQL** et **MongoDB**), tout en respectant une architecture modulaire et évolutive.
+L’objectif est de combiner **microservices Node.js**, un **frontend React**, et deux types de bases de données (**MySQL** et **MongoDB**), tout en respectant une architecture modulaire et évolutive. Les données de température sont récupérées depuis des APIs externes et affichées directement sans stockage.
 
 ---
 
@@ -15,8 +15,9 @@ L’objectif est de combiner **microservices Node.js**, un **frontend React**, e
 - **Frontend :** React
 - **Backend :** Node.js (architecture microservices)
 - **Bases de données :**
-  - MySQL → gestion des utilisateurs, favoris, alertes
-  - MongoDB → stockage des mesures issues des APIs externes (air & eau)
+  - MySQL → Logique métier (favoris, alertes)
+  - MongoDB → uthentification (utilisateurs, rôles)
+  - APIs externes :** données de température de l’air et de l’eau (consultation en temps réel, sans stockage).
 - **Conteneurisation :** Docker + Docker Compose
 - **Documentation API :** Swagger / OpenAPI
 - **Gestion de version :** GitHub (dépôt privé)
@@ -28,10 +29,10 @@ L’objectif est de combiner **microservices Node.js**, un **frontend React**, e
 root/
  ├── frontend/              # Application React
  ├── services/
- │    ├── auth/            # Authentification (MySQL)
+ │    ├── auth/            # Authentification (MongoDB)
  │    ├── preferences/     # Favoris & alertes (MySQL)
- │    ├── weather-air/     # API Air externe → MongoDB
- │    └── weather-water/   # API Eau externe → MongoDB
+ │    ├── weather-air/     # API Air externe → (sans base)
+ │    └── weather-water/   # API Eau externe → (sans base)
  ├── docs/
  │    ├── cahier_des_charges.md
  │    └── architecture-diagram.png (optionnel)

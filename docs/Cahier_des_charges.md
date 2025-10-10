@@ -12,8 +12,8 @@ L’objectif du projet est de développer une application web permettant d’aff
 * **Backend :** Architecture microservices en Node.js.
 * **Bases de données :**
 
-  * **MySQL :** gestion des utilisateurs, authentification, favoris, alertes.
-  * **MongoDB :** stockage des données issues des APIs externes (mesures de température air et eau).
+  * **MySQL :** pour les préférences utilisateurs, favoris et alertes.
+  * **MongoDB :** pour l’authentification (utilisateurs, rôles, tokens).
 * **APIs externes :**
 
   * API n°1 : température de l’air par ville.
@@ -29,10 +29,10 @@ L’objectif du projet est de développer une application web permettant d’aff
 * **Frontend (React)** commun, communiquant avec un **API Gateway**.
 * **Microservices Node.js :**
 
-  1. **Auth Service (MySQL)** : inscription, login, profil utilisateur.
+  1. **Auth Service (MongoDB)** : inscription, login, profil utilisateur.
   2. **Preferences Service (MySQL)** : favoris, alertes.
-  3. **Weather Air Service (MongoDB)** : intégration API air + archivage mesures.
-  4. **Weather Water Service (MongoDB)** : intégration API eau + archivage mesures.
+  3. **Weather Air Service (External API Services)** : intégration API air + pas de base de données, juste des requêtes directes vers les APIs externes.
+  4. **Weather Water Service (External API Services)** : intégration API eau + pas de base de données, juste des requêtes directes vers les APIs externes.
 * **API Gateway :** centralisation des appels vers les microservices.
 * **Docker :** chaque service conteneurisé.
 
@@ -48,15 +48,14 @@ L’objectif du projet est de développer une application web permettant d’aff
 
 ```json
 {
-  "cityCode": "paris",
-  "type": "air" | "water",
-  "value": 22.4,
-  "unit": "°C",
-  "source": "ExternalAPI",
-  "takenAt": "2025-09-25T10:00:00Z",
-  "fetchedAt": "2025-09-25T10:02:00Z"
+  "email": "user@mail.com",
+  "passwordHash": "...",
+  "role": "user" | "admin",
+  "createdAt": "2025-09-26T10:00:00Z"
 }
 ```
+
+### Les APIs externes (Air & Eau) sont consultées en temps réel sans stockage des données dans la base.
 
 ## 5. Parcours Utilisateur
 
