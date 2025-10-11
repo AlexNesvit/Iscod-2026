@@ -31,8 +31,8 @@ root/
  ├── services/
  │    ├── auth/            # Authentification (MongoDB)
  │    ├── preferences/     # Favoris & alertes (MySQL)
- │    ├── weather-air/     # API Air externe → (sans base)
- │    └── weather-water/   # API Eau externe → (sans base)
+ │    ├── weather-air/     # API Air externe → (consultation sans stockage)
+ │    └── weather-water/   # API Eau externe → (consultation sans stockage)
  ├── docs/
  │    ├── cahier_des_charges.md
  │    └── architecture-diagram.png (optionnel)
