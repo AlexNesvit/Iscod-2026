@@ -18,6 +18,7 @@ L’objectif est de combiner **microservices Node.js**, un **frontend React**, e
   - MySQL → Logique métier (favoris, alertes)
   - MongoDB → uthentification (utilisateurs, rôles)
   - APIs externes :** données de température de l’air et de l’eau (consultation en temps réel, sans stockage).
+- **Sécurité BDD :** utilisateurs dédiés avec privilèges limités (DML    uniquement, sans DDL ni GRANT ALL)
 - **Conteneurisation :** Docker + Docker Compose
 - **Documentation API :** Swagger / OpenAPI
 - **Gestion de version :** GitHub (dépôt privé)
@@ -39,6 +40,23 @@ root/
  ├── docker-compose.yml
  └── README.md
 ```
+
+---
+
+## 🔒 Sécurité et Bonnes Pratiques
+- Chaque base (MySQL et MongoDB) possède un utilisateur dédié et cloisonné.
+- Les privilèges sont limités à la lecture/écriture (DML).
+- Aucune action d’administration (DROP, CREATE) n’est autorisée via les services.
+- Intégrité des données garantie par les contraintes de clés étrangères dans MySQL.
+
+---
+
+## 🗺️ Étapes de Développement
+1. **Figma / Wireframes** : parcours de navigation (desktop), texte réel.
+2. **Modélisation BDD** : schémas MySQL et MongoDB.
+3. **Maquette couleur fidèle** : une seule page (mobile + desktop).
+4. **Intégration statique HTML/CSS** : méthode BEM + SASS (Raphaël Goetter).
+5. **Découpage React** : templates et modules.
 
 ---
 

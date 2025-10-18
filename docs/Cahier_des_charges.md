@@ -72,7 +72,17 @@ L’objectif du projet est de développer une application web permettant d’aff
 * **Scalabilité :** architecture microservices, conteneurisation Docker.
 * **Qualité :** documentation des APIs (Swagger), tests unitaires de base.
 
-## 7. Fonctionnalités Futures (optionnelles)
+## 7. Sécurité des Bases de Données
+- Chaque base de données (MySQL et MongoDB) disposera d’un **utilisateur dédié** :
+  - accès limité à **une seule base** ;
+  - privilèges restreints à **lecture/écriture (DML uniquement)** ;
+  - **aucun droit administrateur (pas de GRANT ALL)**.
+- Ce cloisonnement garantit la sécurité et réduit les risques en cas de compromission.
+- Les contraintes d’intégrité (clés étrangères, unicité) seront activées sur MySQL afin d’assurer la cohérence des données.
+
+
+
+## 8. Fonctionnalités Futures (optionnelles)
 
 En fonction du temps et des ressources disponibles, des fonctionnalités supplémentaires pourront être intégrées :
 
@@ -81,7 +91,7 @@ En fonction du temps et des ressources disponibles, des fonctionnalités supplé
 
 Ces éléments ne font pas partie du MVP initial mais pourront enrichir l’expérience utilisateur ultérieurement.
 
-## 8. Livrables
+## 9. Livrables
 
 * Code source (Frontend React, Backend Node.js microservices).
 * Schéma des bases de données.
