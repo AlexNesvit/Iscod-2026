@@ -70,3 +70,7 @@ Les instructions pour installer et exécuter le projet en local avec Docker Comp
 - **Swagger API Docs :** (à définir)
 
 ---
+
+
+Figma: Mettre en place un design systémique
+Checked Atomic design, le principe - (4 min)
