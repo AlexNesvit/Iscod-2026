@@ -102,7 +102,7 @@ Elle est susceptible d’évoluer, d’être modifiée ou supprimée au fil du d
 
 ### Étape 4 – Initialisation technique
 	•	Installation Node.js
-	•	Initialisation du projet (npm)
+	•	Initialisation du projet (npm) ✅ «Local Express skeleton OK»
 	•	Structure des microservices
 	•	Configuration Docker / Docker Compose
 
