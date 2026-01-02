@@ -76,3 +76,54 @@ Les instructions pour installer et exécuter le projet en local avec Docker Comp
 
 Figma: Mettre en place un design systémique
 Checked Atomic design, le principe - (4 min)
+
+---
+
+## 🛠️ Roadmap de développement (notes personnelles)
+
+Cette section constitue un plan de travail évolutif, destiné au suivi personnel de l’avancement du projet.
+Elle est susceptible d’évoluer, d’être modifiée ou supprimée au fil du développement.
+
+### Étape 1 – Cadrage & documentation
+	•	Création du cahier des charges - ✅
+	•	Vision produit / cadrage projet - ✅
+	•	User stories / backlog produit - ✅
+	•	Mise à jour continue de la documentation - en cours
+
+### Étape 2 – Conception
+	•	Wireframes Figma (parcours desktop, texte réel) - en cours
+	•	Modélisation UML
+	•	Modélisation BDD (MERISE)
+
+### Étape 3 – Maquettes UI
+	•	Maquette couleur fidèle (desktop)
+	•	Maquette couleur fidèle (mobile)
+
+### Étape 4 – Intégration statique
+	•	Intégration HTML / CSS
+	•	Méthodologie BEM
+	•	SASS
+
+### Étape 5 – Initialisation technique
+	•	Installation Node.js
+	•	Initialisation du projet (npm)
+	•	Structure des microservices
+	•	Configuration Docker / Docker Compose
+
+### Étape 6 – Backend (microservices)
+	•	Authentification (MongoDB)
+	•	Gestion des préférences (MySQL)
+	•	Service météo air (API externe)
+	•	Service météo eau (API externe)
+	•	Sécurisation des accès BDD
+
+### Étape 7 – Frontend React
+	•	Découpage des composants
+	•	Templates et vues
+	•	Connexion aux APIs backend
+
+### Étape 8 – Documentation & finalisation
+	•	Documentation Swagger / OpenAPI
+	•	Tests fonctionnels
+	•	Ajustements finaux
+	•	Préparation à la soutenance
