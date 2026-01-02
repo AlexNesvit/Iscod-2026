@@ -99,7 +99,13 @@ Elle est susceptible d’évoluer, d’être modifiée ou supprimée au fil du d
 	•	Maquette couleur fidèle (desktop)
 	•	Maquette couleur fidèle (mobile)
 
-### Étape 4 – Intégration statique
+### Étape 4 – Initialisation technique
+	•	Installation Node.js
+	•	Initialisation du projet (npm)
+	•	Structure des microservices
+	•	Configuration Docker / Docker Compose
+
+### Étape 5 – Intégration statique
 	•	Intégration HTML / CSS
 	•	Méthodologie BEM
 	•	SASS
