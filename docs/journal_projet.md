@@ -75,3 +75,53 @@ Ces choix visent à reproduire une méthodologie de travail proche de celle renc
 	•	d’une roadmap permettant de suivre l’avancement.
 
 Les prochaines étapes concerneront l’initialisation technique (Node.js, Express, Docker) et la mise en place du socle backend.
+
+## Initialisation du socle technique (en cours)
+
+À ce stade du projet, j’ai entamé la phase d’initialisation du socle technique avant toute implémentation fonctionnelle ou frontend.
+
+L’objectif de cette étape est de mettre en place un environnement stable et reproductible, permettant au projet de démarrer correctement, même en l’absence de fonctionnalités métier.
+
+Je travaille actuellement sur les actions suivantes :
+	•	installation et configuration de Node.js (version LTS),
+	•	mise en place d’un serveur Express minimal,
+	•	création de la structure des microservices,
+	•	préparation de la conteneurisation avec Docker et Docker Compose.
+
+### Mise en place de l’environnement Node.js
+
+Le projet a été initialisé à l’aide de Node.js afin de disposer d’un point d’entrée technique commun à l’ensemble des services.
+
+Les premières commandes exécutées sont les suivantes :
+	•	node -v (vérification de la version LTS installée)
+	•	npm init -y (initialisation du projet Node)
+	•	npm install express (installation du framework Express)
+
+Ces étapes permettent de disposer d’un projet Node fonctionnel et prêt à accueillir un serveur HTTP minimal.
+
+### Serveur Express minimal
+
+Un serveur Express basique est ensuite mis en place afin de valider le bon fonctionnement de l’environnement Node.
+
+L’objectif à ce stade n’est pas d’implémenter de logique métier, mais simplement de vérifier que :
+	•	le serveur démarre correctement,
+	•	une route simple (ex. /health) répond sans erreur.
+
+### Structure des microservices
+
+Une structure de dossiers est créée afin de préparer l’architecture microservices du projet, avec un service par responsabilité (authentification, préférences, météo air, météo eau).
+
+Chaque service est initialisé de manière minimale avec son propre point d’entrée Node et un serveur Express simple, sans dépendance fonctionnelle à ce stade.
+
+### Préparation de la conteneurisation Docker
+
+En parallèle, la conteneurisation est préparée avec Docker et Docker Compose afin de garantir un environnement reproductible.
+
+Les outils Docker sont utilisés pour :
+	•	définir les services applicatifs,
+	•	préparer l’intégration future des bases de données,
+	•	permettre le démarrage global du projet via une commande unique (docker compose up).
+
+Ce choix a été fait afin de sécuriser l’environnement de développement en amont et d’éviter toute dépendance prématurée au frontend ou aux aspects visuels du projet.
+
+Cette phase permettra, une fois terminée, de disposer d’un projet techniquement opérationnel, prêt à accueillir progressivement les fonctionnalités backend (authentification, préférences, services météo), puis frontend.
