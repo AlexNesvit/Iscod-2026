@@ -69,6 +69,7 @@ Les instructions pour installer et exécuter le projet en local avec Docker Comp
 - **Cahier des Charges :** voir [docs/cahier_des_charges.md](docs/cahier_des_charges.md)
 - **Vision produit / Cadrage:** voir [docs/vision_produit.md](docs/vision_produit.md)
 - **User stories / Backlog :** voir [docs/ser_stories.md](docs/user_stories.md)
+- **Notes de projet / journal de bord (interne) :** voir [docs/journal_projet.md](docs/journal_projet.md)
 - **Swagger API Docs :** (à définir)
 
 ---
