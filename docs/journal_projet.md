@@ -125,3 +125,15 @@ Les outils Docker sont utilisés pour :
 Ce choix a été fait afin de sécuriser l’environnement de développement en amont et d’éviter toute dépendance prématurée au frontend ou aux aspects visuels du projet.
 
 Cette phase permettra, une fois terminée, de disposer d’un projet techniquement opérationnel, prêt à accueillir progressivement les fonctionnalités backend (authentification, préférences, services météo), puis frontend.
+
+### Initialisation du socle technique (terminée)
+
+La phase d’initialisation du socle technique est désormais terminée.
+
+Un serveur Node.js avec Express a été mis en place et validé localement, avec un endpoint de santé simple (/health) permettant de vérifier le bon fonctionnement de l’application.
+
+Le projet a ensuite été conteneurisé avec Docker. Un Dockerfile et un docker-compose.yml minimal ont été créés afin de permettre le lancement de l’application dans un environnement isolé et reproductible.
+
+L’application est désormais exécutée entièrement à l’intérieur d’un conteneur Docker et peut être démarrée via une seule commande (docker compose up). Le serveur Node.js ne dépend plus de l’environnement local pour son exécution.
+
+Ce socle technique garantit une base stable pour la suite du projet et permet d’envisager sereinement l’ajout progressif des microservices, des bases de données et du frontend.
