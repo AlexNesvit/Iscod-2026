@@ -105,6 +105,7 @@ Elle est susceptible d’évoluer, d’être modifiée ou supprimée au fil du d
 	•	Initialisation du projet (npm) ✅ «Local Express skeleton OK»
 	•	Structure des microservices
 	•	Configuration Docker / Docker Compose
+  •	Workflow Git : main (stable) / develop (development)
 
 ### Étape 5 – Intégration statique
 	•	Intégration HTML / CSS
