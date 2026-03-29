@@ -2,7 +2,7 @@
   "name": "projetiscod2026",
   "version": "1.0.0",
   "description": "## 📌 Description Ce projet est une application web permettant : - d’afficher la **température de l’air** et de l’**eau** par ville (via des APIs externes), - de gérer ses **villes favorites**, - de définir des **alertes personnalisées**, - et d’assurer une **authentification sécurisée** des utilisateurs.",
-  "main": "index.js",
+  "main": "services/auth/index.js",
   "directories": {
     "doc": "docs"
   },
@@ -13,6 +13,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.2.1"
+    "express": "^5.2.1",
+    "mongoose": "^8.23.0",
+    "mysql2": "^3.20.0"
   }
 }

@@ -180,3 +180,52 @@ Le démarrage complet via `docker compose up -d --build` n’a pas pu être conf
 ### Résultat du bloc
 
 Le bloc 1 est considéré comme terminé sur le plan structurel : l’architecture microservices est en place, cohérente et prête à accueillir les blocs suivants (MongoDB, MySQL, authentification JWT, gestion des préférences et intégration des APIs météo externes).
+
+⸻
+
+## Bloc 2 — Intégration des bases de données (terminée)
+
+Le deuxième bloc a consisté à intégrer les deux bases de données attendues dans le projet : MongoDB et MySQL, directement dans l’environnement Docker Compose.
+
+### Pourquoi deux bases de données
+
+Le choix de deux systèmes de stockage répond à une logique d’architecture :
+	•	MongoDB est utilisé pour l’authentification (documents utilisateur, flexibilité du schéma, modèle orienté identité).
+	•	MySQL est utilisé pour la logique métier structurée (favoris, alertes), avec un schéma relationnel clair et des contraintes de cohérence.
+
+Cette séparation permet d’illustrer une approche polyglotte orientée besoins métier, tout en respectant le cahier des charges de l’examen.
+
+### Séparation des responsabilités
+
+La responsabilité des données est désormais explicitement répartie :
+	•	service `auth` ↔ MongoDB (`auth_db`),
+	•	service `preferences` ↔ MySQL (`preferences_db`),
+	•	services météo sans stockage persistant (consultation uniquement).
+
+Ce découpage réduit le couplage entre composants et facilite l’évolution de chaque service.
+
+### Connexion via Docker
+
+Les deux bases sont intégrées à `docker-compose.yml` avec :
+	•	volumes persistants dédiés (`mongo_data`, `mysql_data`),
+	•	healthchecks,
+	•	dépendances de démarrage (`depends_on`) pour garantir l’ordre d’initialisation.
+
+Pour MongoDB, un script d’initialisation crée l’utilisateur applicatif `app_user` avec des droits limités à `auth_db`.
+
+Pour MySQL, un script SQL d’initialisation crée les tables métier :
+	•	`favorites`
+	•	`alerts`
+
+### Vérifications effectuées
+
+Les validations techniques réalisées :
+	•	services et bases démarrés via `docker compose up -d --build`,
+	•	MongoDB en état `healthy` et connexion confirmée depuis le service `auth`,
+	•	MySQL en état `healthy` et connexion confirmée depuis le service `preferences`,
+	•	présence confirmée des tables `favorites` et `alerts` dans `preferences_db`,
+	•	health endpoints des services `auth` et `preferences` retournant un statut `ok` avec état de connexion base.
+
+### Résultat du bloc
+
+Le bloc 2 est validé : l’application dispose désormais d’une intégration Docker complète de MongoDB et MySQL, avec une séparation claire des responsabilités et une base technique prête pour le bloc suivant (JWT, register/login, puis CRUD métier).

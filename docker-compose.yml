@@ -4,6 +4,10 @@ services:
     command: node services/auth/index.js
     environment:
       PORT: 3001
+      MONGO_URI: mongodb://app_user:app_password@mongo:27017/auth_db?authSource=auth_db
+    depends_on:
+      mongo:
+        condition: service_healthy
     ports:
       - "3001:3001"
 
@@ -12,6 +16,14 @@ services:
     command: node services/preferences/index.js
     environment:
       PORT: 3002
+      MYSQL_HOST: mysql
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: preferences_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
+    depends_on:
+      mysql:
+        condition: service_healthy
     ports:
       - "3002:3002"
 
@@ -30,3 +42,44 @@ services:
       PORT: 3004
     ports:
       - "3004:3004"
+
+  mongo:
+    image: mongo:7
+    environment:
+      MONGO_INITDB_DATABASE: auth_db
+      MONGO_INITDB_ROOT_USERNAME: root_user
+      MONGO_INITDB_ROOT_PASSWORD: root_password
+    volumes:
+      - mongo_data:/data/db
+      - ./services/auth/mongo-init:/docker-entrypoint-initdb.d
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      retries: 8
+      start_period: 10s
+
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: preferences_db
+      MYSQL_USER: app_user
+      MYSQL_PASSWORD: app_password
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./services/preferences/sql/init:/docker-entrypoint-initdb.d
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -uroot -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+
+volumes:
+  mongo_data:
+  mysql_data:
