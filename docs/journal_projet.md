@@ -137,3 +137,46 @@ Le projet a ensuite été conteneurisé avec Docker. Un Dockerfile et un docker-
 L’application est désormais exécutée entièrement à l’intérieur d’un conteneur Docker et peut être démarrée via une seule commande (docker compose up). Le serveur Node.js ne dépend plus de l’environnement local pour son exécution.
 
 Ce socle technique garantit une base stable pour la suite du projet et permet d’envisager sereinement l’ajout progressif des microservices, des bases de données et du frontend.
+
+⸻
+
+## Bloc 1 — Mise en place de l’architecture microservices (terminée)
+
+Dans la continuité du socle technique, j’ai finalisé le premier bloc de développement en structurant l’application en microservices distincts, conformément au cahier des charges.
+
+L’objectif de ce bloc était de passer d’un serveur unique minimal à une base d’architecture distribuée, avec une séparation claire des responsabilités.
+
+### Structure créée
+
+Les dossiers de services suivants ont été créés :
+	•	services/auth
+	•	services/preferences
+	•	services/weather-air
+	•	services/weather-water
+
+Chaque service dispose d’un point d’entrée `index.js` avec :
+	•	une application Express minimale,
+	•	une route `/health`,
+	•	un port dédié via variable d’environnement `PORT`.
+
+### Évolution Docker Compose
+
+Le fichier `docker-compose.yml` a été mis à jour pour déclarer les quatre services applicatifs :
+	•	auth (port 3001)
+	•	preferences (port 3002)
+	•	weather-air (port 3003)
+	•	weather-water (port 3004)
+
+Cette étape permet de préparer le projet pour la suite (ajout des bases de données et communication interservices).
+
+### Vérifications réalisées
+
+Les validations suivantes ont été effectuées :
+	•	validation de la configuration compose via `docker compose config` (OK),
+	•	vérification syntaxique des quatre points d’entrée via `node --check` (OK).
+
+Le démarrage complet via `docker compose up -d --build` n’a pas pu être confirmé dans l’environnement courant car le daemon Docker n’était pas accessible au moment du test.
+
+### Résultat du bloc
+
+Le bloc 1 est considéré comme terminé sur le plan structurel : l’architecture microservices est en place, cohérente et prête à accueillir les blocs suivants (MongoDB, MySQL, authentification JWT, gestion des préférences et intégration des APIs météo externes).

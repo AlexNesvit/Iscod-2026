@@ -1,7 +1,32 @@
-version: "3.9"
-
 services:
-  app:
+  auth:
     build: .
+    command: node services/auth/index.js
+    environment:
+      PORT: 3001
     ports:
-      - "3000:3000"
+      - "3001:3001"
+
+  preferences:
+    build: .
+    command: node services/preferences/index.js
+    environment:
+      PORT: 3002
+    ports:
+      - "3002:3002"
+
+  weather-air:
+    build: .
+    command: node services/weather-air/index.js
+    environment:
+      PORT: 3003
+    ports:
+      - "3003:3003"
+
+  weather-water:
+    build: .
+    command: node services/weather-water/index.js
+    environment:
+      PORT: 3004
+    ports:
+      - "3004:3004"
