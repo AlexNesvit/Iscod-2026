@@ -135,3 +135,51 @@ Elle est susceptible d’évoluer, d’être modifiée ou supprimée au fil du d
 	•	Tests fonctionnels
 	•	Ajustements finaux
 	•	Préparation à la soutenance
+
+---
+
+## 🔐 Bloc 3 — Authentification (JWT) implémentée
+
+Le microservice `auth` fournit désormais une authentification minimale sécurisée :
+
+- `POST /register` : création de compte utilisateur
+- `POST /login` : authentification et génération d’un token JWT
+- `GET /me` : route protégée (middleware `verifyToken`) pour récupérer le profil connecté
+
+### Register
+
+Entrée :
+- `email`
+- `password` (minimum 8 caractères)
+
+Traitements :
+- normalisation de l’email (trim + lowercase),
+- vérification unicité email,
+- hash du mot de passe avec `bcryptjs`,
+- stockage MongoDB via schéma utilisateur.
+
+Sortie :
+- utilisateur créé (sans mot de passe).
+
+### Login
+
+Entrée :
+- `email`
+- `password`
+
+Traitements :
+- recherche utilisateur par email,
+- comparaison du mot de passe en clair avec `passwordHash` via `bcrypt.compare`,
+- génération du JWT (`sub`, `email`, `role`, expiration).
+
+Sortie :
+- `token` JWT + informations utilisateur.
+
+### Sécurité appliquée
+
+- mot de passe jamais stocké en clair (hash bcrypt),
+- vérification du token Bearer via middleware,
+- route protégée (`/me`) inaccessible sans JWT valide (`401`),
+- secret JWT configurable par variable d’environnement (`JWT_SECRET`),
+- durée de validité configurable (`JWT_EXPIRES_IN`),
+- configuration du coût bcrypt configurable (`BCRYPT_SALT_ROUNDS`).

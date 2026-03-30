@@ -229,3 +229,64 @@ Les validations techniques réalisées :
 ### Résultat du bloc
 
 Le bloc 2 est validé : l’application dispose désormais d’une intégration Docker complète de MongoDB et MySQL, avec une séparation claire des responsabilités et une base technique prête pour le bloc suivant (JWT, register/login, puis CRUD métier).
+
+⸻
+
+## Bloc 3 — Implémentation de l’authentification JWT (terminée)
+
+Ce bloc a permis de transformer le service `auth` en service de sécurité minimal fonctionnel, conforme aux attentes d’une application sécurisée.
+
+### Register (`POST /register`)
+
+Le endpoint d’inscription a été implémenté avec les règles suivantes :
+	•	validation des champs obligatoires (`email`, `password`),
+	•	normalisation de l’email (trim + lowercase),
+	•	contrôle de longueur minimale du mot de passe,
+	•	vérification d’unicité de l’email en base,
+	•	création du compte en MongoDB.
+
+### Login (`POST /login`)
+
+Le endpoint de connexion a été implémenté avec :
+	•	recherche de l’utilisateur par email,
+	•	vérification du mot de passe via comparaison bcrypt,
+	•	retour d’un token JWT signé en cas de succès.
+
+### Hash password
+
+La sécurité des mots de passe repose sur :
+	•	l’utilisation de `bcryptjs`,
+	•	le stockage d’un `passwordHash` uniquement,
+	•	l’absence de stockage de mot de passe en clair,
+	•	un facteur de coût configurable (`BCRYPT_SALT_ROUNDS`).
+
+### Schéma MongoDB
+
+Un schéma utilisateur dédié a été ajouté :
+	•	`email` (unique),
+	•	`passwordHash`,
+	•	`role` (`user`/`admin`),
+	•	`createdAt`.
+
+Ce schéma structure les données d’authentification et renforce la cohérence du service.
+
+### Sécurité (JWT + middleware)
+
+Un middleware de vérification JWT (`verifyToken`) a été ajouté :
+	•	vérification du header `Authorization: Bearer <token>`,
+	•	vérification de signature + expiration,
+	•	rejet des requêtes non autorisées (`401`).
+
+Une route protégée (`GET /me`) permet de valider le fonctionnement du middleware sur un cas concret.
+
+### Vérifications réalisées
+
+Les tests fonctionnels ont confirmé le comportement attendu :
+	•	`register` retourne `201`,
+	•	`login` retourne `200` + token JWT,
+	•	`/me` avec token valide retourne `200`,
+	•	`/me` sans token retourne `401`.
+
+### Résultat du bloc
+
+Le bloc 3 est validé : le socle d’authentification sécurisé (inscription, connexion, hash des mots de passe, JWT, middleware de protection) est en place et opérationnel.
