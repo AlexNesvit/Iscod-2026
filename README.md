@@ -192,3 +192,39 @@ Sortie :
 - secret JWT configurable par variable d’environnement (`JWT_SECRET`),
 - durée de validité configurable (`JWT_EXPIRES_IN`),
 - configuration du coût bcrypt configurable (`BCRYPT_SALT_ROUNDS`).
+
+---
+
+## ⚙️ Configuration `.env` / `.env.example`
+
+- `.env` : fichier local de configuration (non versionné, présent dans `.gitignore`)
+- `.env.example` : modèle versionné pour documenter toutes les variables nécessaires
+
+Variables principales :
+- ports des services (`AUTH_PORT`, `PREFERENCES_PORT`, etc.)
+- MongoDB auth (`AUTH_MONGO_URI`, utilisateurs, mots de passe)
+- MySQL (`MYSQL_DATABASE`, `MYSQL_USER`, `MYSQL_PASSWORD`, etc.)
+- sécurité auth (`JWT_SECRET`, `JWT_EXPIRES_IN`, `BCRYPT_SALT_ROUNDS`)
+
+---
+
+## ⭐ Bloc 4 — Gestion des préférences utilisateur (MySQL)
+
+Le microservice `preferences` gère désormais les favoris et alertes utilisateur avec liaison par `user_id` (issu du JWT).
+
+Routes implémentées :
+- `POST /favorites`
+- `GET /favorites`
+- `DELETE /favorites/:id`
+- `POST /alerts`
+- `GET /alerts`
+
+Règles de sécurité :
+- toutes les routes `favorites` / `alerts` sont protégées par token Bearer,
+- `user_id` est récupéré depuis `req.user.sub`,
+- suppression favorite autorisée uniquement si `id` + `user_id` correspondent.
+
+Gestion d’erreurs :
+- `401` si token absent/invalide,
+- `400` si payload invalide (ex. `city` manquant),
+- `404` si ressource favorite introuvable sur suppression.

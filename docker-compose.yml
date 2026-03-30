@@ -19,6 +19,7 @@ services:
     command: node services/preferences/index.js
     environment:
       PORT: ${PREFERENCES_PORT}
+      JWT_SECRET: ${JWT_SECRET}
       MYSQL_HOST: mysql
       MYSQL_PORT: ${MYSQL_PORT}
       MYSQL_DATABASE: ${MYSQL_DATABASE}

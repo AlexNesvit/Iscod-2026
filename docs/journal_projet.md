@@ -290,3 +290,73 @@ Les tests fonctionnels ont confirmé le comportement attendu :
 ### Résultat du bloc
 
 Le bloc 3 est validé : le socle d’authentification sécurisé (inscription, connexion, hash des mots de passe, JWT, middleware de protection) est en place et opérationnel.
+
+⸻
+
+## Configuration centralisée via `.env` et `.env.example`
+
+Dans la continuité des blocs backend, la configuration a été centralisée à la racine du projet :
+	•	`.env` pour l’exécution locale (non versionné),
+	•	`.env.example` comme modèle de référence (versionné).
+
+Ce changement permet de :
+	•	éviter le hardcode des secrets et paramètres techniques dans `docker-compose.yml`,
+	•	uniformiser les configurations entre environnements,
+	•	faciliter l’onboarding et la reproductibilité du projet.
+
+Les variables couvrent :
+	•	les ports des microservices,
+	•	la connexion MongoDB (auth),
+	•	la connexion MySQL (preferences),
+	•	la sécurité JWT/Bcrypt.
+
+⸻
+
+## Bloc 4 — Gestion des préférences utilisateur (MySQL) (terminée)
+
+Ce bloc a consisté à implémenter la logique métier des préférences utilisateur dans le microservice `preferences`, avec liaison systématique au `user_id` extrait du JWT.
+
+### Sécurisation des routes
+
+Un middleware de vérification token a été ajouté au service `preferences` afin de protéger les routes métier :
+	•	`/favorites`
+	•	`/alerts`
+
+L’identifiant utilisateur est récupéré depuis `req.user.sub`, ce qui garantit une isolation des données par utilisateur.
+
+### Favorites (CRUD partiel)
+
+Fonctionnalités implémentées :
+	•	`POST /favorites` : création d’un favori (`city` requis),
+	•	`GET /favorites` : liste des favoris de l’utilisateur connecté,
+	•	`DELETE /favorites/:id` : suppression d’un favori seulement s’il appartient à l’utilisateur courant.
+
+### Alerts (create/read)
+
+Fonctionnalités implémentées :
+	•	`POST /alerts` : création d’alerte (`city`, `threshold`),
+	•	`GET /alerts` : liste des alertes de l’utilisateur connecté.
+
+### Choix technique MySQL
+
+Le service utilise `mysql2` avec un pool de connexions pour une gestion plus robuste des accès base.
+
+Des logs de debug ont été ajoutés sur les routes principales pour faciliter le suivi des opérations pendant la phase d’examen.
+
+### Gestion des erreurs
+
+Les cas métier attendus sont gérés explicitement :
+	•	`401` si token absent/invalide,
+	•	`400` si données d’entrée manquantes ou invalides,
+	•	`404` si la ressource à supprimer n’existe pas pour l’utilisateur.
+
+### Vérifications réalisées
+
+Des tests fonctionnels ont validé :
+	•	création/lecture/suppression des favoris,
+	•	création/lecture des alertes,
+	•	retours d’erreur conformes (`401`, `400`, `404`).
+
+### Résultat du bloc
+
+Le bloc 4 est validé : le service `preferences` est opérationnel, sécurisé par JWT, connecté à MySQL et conforme au périmètre CRUD attendu pour l’examen.
