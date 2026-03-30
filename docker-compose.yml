@@ -3,55 +3,55 @@ services:
     build: .
     command: node services/auth/index.js
     environment:
-      PORT: 3001
-      MONGO_URI: mongodb://app_user:app_password@mongo:27017/auth_db?authSource=auth_db
-      JWT_SECRET: exam_secret_change_me
-      JWT_EXPIRES_IN: 1h
-      BCRYPT_SALT_ROUNDS: 10
+      PORT: ${AUTH_PORT}
+      MONGO_URI: ${AUTH_MONGO_URI}
+      JWT_SECRET: ${JWT_SECRET}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
+      BCRYPT_SALT_ROUNDS: ${BCRYPT_SALT_ROUNDS}
     depends_on:
       mongo:
         condition: service_healthy
     ports:
-      - "3001:3001"
+      - "${AUTH_PORT}:${AUTH_PORT}"
 
   preferences:
     build: .
     command: node services/preferences/index.js
     environment:
-      PORT: 3002
+      PORT: ${PREFERENCES_PORT}
       MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_DATABASE: preferences_db
-      MYSQL_USER: app_user
-      MYSQL_PASSWORD: app_password
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     depends_on:
       mysql:
         condition: service_healthy
     ports:
-      - "3002:3002"
+      - "${PREFERENCES_PORT}:${PREFERENCES_PORT}"
 
   weather-air:
     build: .
     command: node services/weather-air/index.js
     environment:
-      PORT: 3003
+      PORT: ${WEATHER_AIR_PORT}
     ports:
-      - "3003:3003"
+      - "${WEATHER_AIR_PORT}:${WEATHER_AIR_PORT}"
 
   weather-water:
     build: .
     command: node services/weather-water/index.js
     environment:
-      PORT: 3004
+      PORT: ${WEATHER_WATER_PORT}
     ports:
-      - "3004:3004"
+      - "${WEATHER_WATER_PORT}:${WEATHER_WATER_PORT}"
 
   mongo:
     image: mongo:7
     environment:
-      MONGO_INITDB_DATABASE: auth_db
-      MONGO_INITDB_ROOT_USERNAME: root_user
-      MONGO_INITDB_ROOT_PASSWORD: root_password
+      MONGO_INITDB_DATABASE: ${AUTH_MONGO_DB}
+      MONGO_INITDB_ROOT_USERNAME: ${AUTH_MONGO_ROOT_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${AUTH_MONGO_ROOT_PASSWORD}
     volumes:
       - mongo_data:/data/db
       - ./services/auth/mongo-init:/docker-entrypoint-initdb.d
@@ -67,10 +67,10 @@ services:
   mysql:
     image: mysql:8.4
     environment:
-      MYSQL_DATABASE: preferences_db
-      MYSQL_USER: app_user
-      MYSQL_PASSWORD: app_password
-      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
       - ./services/preferences/sql/init:/docker-entrypoint-initdb.d

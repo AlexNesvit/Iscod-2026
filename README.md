@@ -60,8 +60,17 @@ root/
 
 ---
 
-## 🚀 Lancement (à venir)
-Les instructions pour installer et exécuter le projet en local avec Docker Compose seront ajoutées ultérieurement.
+## 🚀 Lancement (Docker Compose)
+
+1. Créer le fichier `.env` à la racine (ou partir de `.env.example`).
+2. Vérifier les variables sensibles (`JWT_SECRET`, mots de passe BDD).
+3. Démarrer la stack :
+
+```bash
+docker compose up -d --build
+```
+
+Le projet utilise les variables `.env` directement dans `docker-compose.yml`.
 
 ---
 
