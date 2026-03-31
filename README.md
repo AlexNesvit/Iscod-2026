@@ -228,3 +228,23 @@ Gestion d’erreurs :
 - `401` si token absent/invalide,
 - `400` si payload invalide (ex. `city` manquant),
 - `404` si ressource favorite introuvable sur suppression.
+
+---
+
+## 🌤️ Bloc 5 — Intégration API météo air (première version)
+
+Le microservice `weather-air` expose maintenant un endpoint métier :
+- `GET /air?city=<ville>`
+
+Principe fonctionnel :
+- appel API externe préparé (`fetch`) avec gestion `try/catch`,
+- mode mock activable sans clé réelle (`WEATHER_AIR_USE_MOCK=true`),
+- aucun stockage en base : la donnée est récupérée et renvoyée directement,
+- affichage direct : réponse renvoie la température + une image de ville (`cityImage`).
+
+Variables `.env` liées au bloc :
+- `WEATHER_AIR_USE_MOCK`
+- `WEATHER_AIR_API_URL`
+- `WEATHER_AIR_API_KEY`
+- `UNSPLASH_API_URL`
+- `UNSPLASH_ACCESS_KEY`

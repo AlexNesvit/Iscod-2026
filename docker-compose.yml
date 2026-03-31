@@ -36,6 +36,11 @@ services:
     command: node services/weather-air/index.js
     environment:
       PORT: ${WEATHER_AIR_PORT}
+      WEATHER_AIR_USE_MOCK: ${WEATHER_AIR_USE_MOCK}
+      WEATHER_AIR_API_URL: ${WEATHER_AIR_API_URL}
+      WEATHER_AIR_API_KEY: ${WEATHER_AIR_API_KEY}
+      UNSPLASH_API_URL: ${UNSPLASH_API_URL}
+      UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY}
     ports:
       - "${WEATHER_AIR_PORT}:${WEATHER_AIR_PORT}"
 

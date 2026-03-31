@@ -360,3 +360,52 @@ Des tests fonctionnels ont validé :
 ### Résultat du bloc
 
 Le bloc 4 est validé : le service `preferences` est opérationnel, sécurisé par JWT, connecté à MySQL et conforme au périmètre CRUD attendu pour l’examen.
+
+⸻
+
+## Bloc 5 — Intégration API météo air (en cours, version initiale livrée)
+
+Ce bloc démarre l’intégration de la couche météo, qui constitue la fonctionnalité différenciante du projet.
+
+### Objectif technique de cette première livraison
+
+Mettre en place le service `weather-air` avec :
+	•	un appel API externe préparé via `fetch`,
+	•	un mode mock fonctionnel sans clé réelle,
+	•	une gestion d’erreurs robuste (`try/catch`),
+	•	une réponse directe sans stockage base de données.
+
+### Endpoint ajouté
+
+`GET /air?city=<ville>`
+
+Le comportement est le suivant :
+	•	si mode mock activé, le service renvoie une température simulée,
+	•	si clé disponible, le service appelle l’API météo externe et renvoie la température réelle,
+	•	dans les deux cas, la réponse est immédiate et non persistée.
+
+### Appel API externe, pas de stockage, affichage direct
+
+La logique suit la contrainte projet :
+	•	**appel API externe** : récupération météo à la demande,
+	•	**pas de stockage** : aucune insertion en base (ni MySQL ni MongoDB),
+	•	**affichage direct** : la température est renvoyée directement au frontend.
+
+### Background ville (Unsplash)
+
+Une URL d’image de ville est ajoutée à la réponse (`cityImage`) :
+	•	fallback simple sans clé via `source.unsplash.com`,
+	•	appel API Unsplash prêt si clé fournie.
+
+### Configuration `.env`
+
+Les variables de ce bloc ont été ajoutées dans `.env` et `.env.example` :
+	•	`WEATHER_AIR_USE_MOCK`
+	•	`WEATHER_AIR_API_URL`
+	•	`WEATHER_AIR_API_KEY`
+	•	`UNSPLASH_API_URL`
+	•	`UNSPLASH_ACCESS_KEY`
+
+### Résultat
+
+Le bloc 5 (partie `weather-air`) est prêt pour les tests frontend en mode mock, tout en étant préparé pour un basculement vers un provider réel dès qu’une clé API est disponible.
