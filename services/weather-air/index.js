@@ -19,7 +19,7 @@ app.get('/health', (req, res) => {
 });
 
 function buildFallbackCityImage(city) {
-  return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)},city`;
+  return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)}`;
 }
 
 async function getCityImage(city) {
