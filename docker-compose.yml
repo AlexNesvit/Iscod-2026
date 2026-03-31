@@ -49,6 +49,11 @@ services:
     command: node services/weather-water/index.js
     environment:
       PORT: ${WEATHER_WATER_PORT}
+      WEATHER_WATER_USE_MOCK: ${WEATHER_WATER_USE_MOCK}
+      WEATHER_WATER_API_URL: ${WEATHER_WATER_API_URL}
+      WEATHER_WATER_API_KEY: ${WEATHER_WATER_API_KEY}
+      UNSPLASH_API_URL: ${UNSPLASH_API_URL}
+      UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY}
     ports:
       - "${WEATHER_WATER_PORT}:${WEATHER_WATER_PORT}"
 
