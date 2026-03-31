@@ -363,7 +363,7 @@ Le bloc 4 est validé : le service `preferences` est opérationnel, sécurisé p
 
 ⸻
 
-## Bloc 5 — Intégration API météo air (en cours, version initiale livrée)
+## Bloc 5 — Intégration APIs météo air + water (version initiale livrée)
 
 Ce bloc démarre l’intégration de la couche météo, qui constitue la fonctionnalité différenciante du projet.
 
@@ -406,6 +406,21 @@ Les variables de ce bloc ont été ajoutées dans `.env` et `.env.example` :
 	•	`UNSPLASH_API_URL`
 	•	`UNSPLASH_ACCESS_KEY`
 
+### Extension sur `weather-water`
+
+Le même modèle a ensuite été appliqué au service `weather-water` :
+	•	endpoint `GET /water?city=<ville>`,
+	•	appel externe prêt via `fetch`,
+	•	mode mock activable sans clé API,
+	•	gestion `try/catch`,
+	•	pas de stockage base,
+	•	retour direct d’une température de l’eau + `cityImage`.
+
+Variables dédiées ajoutées dans `.env` / `.env.example` :
+	•	`WEATHER_WATER_USE_MOCK`
+	•	`WEATHER_WATER_API_URL`
+	•	`WEATHER_WATER_API_KEY`
+
 ### Résultat
 
-Le bloc 5 (partie `weather-air`) est prêt pour les tests frontend en mode mock, tout en étant préparé pour un basculement vers un provider réel dès qu’une clé API est disponible.
+Le bloc 5 est prêt côté backend pour les deux services météo (`weather-air` et `weather-water`) en mode mock, avec bascule possible vers un provider réel dès qu’une clé API est disponible.

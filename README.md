@@ -248,3 +248,19 @@ Variables `.env` liées au bloc :
 - `WEATHER_AIR_API_KEY`
 - `UNSPLASH_API_URL`
 - `UNSPLASH_ACCESS_KEY`
+
+### Extension `weather-water` (même approche)
+
+Le microservice `weather-water` expose aussi :
+- `GET /water?city=<ville>`
+
+Principe identique :
+- appel API externe prêt via `fetch`,
+- mode mock sans clé (`WEATHER_WATER_USE_MOCK=true`),
+- pas de stockage en base,
+- affichage direct de la température de l’eau + image ville (`cityImage`).
+
+Variables `.env` ajoutées :
+- `WEATHER_WATER_USE_MOCK`
+- `WEATHER_WATER_API_URL`
+- `WEATHER_WATER_API_KEY`
