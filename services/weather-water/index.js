@@ -4,7 +4,7 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3004;
 const SERVICE_NAME = 'weather-water';
 const WEATHER_WATER_API_URL =
-  process.env.WEATHER_WATER_API_URL || 'https://api.openweathermap.org/data/2.5/weather';
+  process.env.WEATHER_WATER_API_URL || 'http://api.weatherapi.com/v1';
 const WEATHER_WATER_API_KEY = process.env.WEATHER_WATER_API_KEY || '';
 const WEATHER_WATER_USE_MOCK = String(process.env.WEATHER_WATER_USE_MOCK || 'true') === 'true';
 const UNSPLASH_API_URL = process.env.UNSPLASH_API_URL || 'https://api.unsplash.com/photos/random';
@@ -69,7 +69,10 @@ app.get('/water', async (req, res) => {
       });
     }
 
-    const url = `${WEATHER_WATER_API_URL}?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_WATER_API_KEY}`;
+    const endpoint = WEATHER_WATER_API_URL.endsWith('/current.json')
+      ? WEATHER_WATER_API_URL
+      : `${WEATHER_WATER_API_URL.replace(/\/$/, '')}/current.json`;
+    const url = `${endpoint}?key=${encodeURIComponent(WEATHER_WATER_API_KEY)}&q=${encodeURIComponent(city)}&aqi=no`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -85,8 +88,8 @@ app.get('/water', async (req, res) => {
 
     return res.json({
       source: 'external',
-      city: data?.name || city,
-      waterTemperature: data?.main?.temp ?? null,
+      city: data?.location?.name || city,
+      waterTemperature: data?.current?.temp_c ?? null,
       unit: 'C',
       waterState: 'Estimated',
       cityImage,

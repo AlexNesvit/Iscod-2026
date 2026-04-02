@@ -4,7 +4,7 @@ const app = express();
 const PORT = Number(process.env.PORT) || 3003;
 const SERVICE_NAME = 'weather-air';
 const WEATHER_AIR_API_URL =
-  process.env.WEATHER_AIR_API_URL || 'https://api.openweathermap.org/data/2.5/weather';
+  process.env.WEATHER_AIR_API_URL || 'http://api.weatherapi.com/v1';
 const WEATHER_AIR_API_KEY = process.env.WEATHER_AIR_API_KEY || '';
 const WEATHER_AIR_USE_MOCK = String(process.env.WEATHER_AIR_USE_MOCK || 'true') === 'true';
 const UNSPLASH_API_URL = process.env.UNSPLASH_API_URL || 'https://api.unsplash.com/photos/random';
@@ -69,7 +69,10 @@ app.get('/air', async (req, res) => {
       });
     }
 
-    const url = `${WEATHER_AIR_API_URL}?q=${encodeURIComponent(city)}&units=metric&appid=${WEATHER_AIR_API_KEY}`;
+    const endpoint = WEATHER_AIR_API_URL.endsWith('/current.json')
+      ? WEATHER_AIR_API_URL
+      : `${WEATHER_AIR_API_URL.replace(/\/$/, '')}/current.json`;
+    const url = `${endpoint}?key=${encodeURIComponent(WEATHER_AIR_API_KEY)}&q=${encodeURIComponent(city)}&aqi=no`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -83,10 +86,10 @@ app.get('/air', async (req, res) => {
 
     return res.json({
       source: 'external',
-      city: data?.name || city,
-      temperature: data?.main?.temp ?? null,
+      city: data?.location?.name || city,
+      temperature: data?.current?.temp_c ?? null,
       unit: 'C',
-      condition: data?.weather?.[0]?.main || 'Unknown',
+      condition: data?.current?.condition?.text || 'Unknown',
       cityImage,
       fetchedAt: new Date().toISOString(),
     });
