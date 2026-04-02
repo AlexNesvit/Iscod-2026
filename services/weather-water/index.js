@@ -22,6 +22,21 @@ function buildFallbackCityImage(city) {
   return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)},water`;
 }
 
+async function buildWaterDegradedResponse(city, message) {
+  return {
+    source: 'fallback',
+    degraded: true,
+    city,
+    waterTemperature: null,
+    unit: 'C',
+    waterState: 'Not available',
+    showWater: false,
+    message,
+    cityImage: await getCityImage(city),
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
 function pickWaterTemperatureC(data) {
   const direct = data?.current?.water_temp_c;
   if (Number.isFinite(direct)) {
@@ -84,10 +99,13 @@ app.get('/water', async (req, res) => {
       const cityImage = await getCityImage(city);
       return res.json({
         source: 'mock',
+        degraded: false,
         city,
         waterTemperature: 18.2,
         unit: 'C',
         waterState: 'Swimmable',
+        showWater: true,
+        message: 'Mock mode enabled',
         cityImage,
         fetchedAt: new Date().toISOString(),
       });
@@ -104,7 +122,10 @@ app.get('/water', async (req, res) => {
       console.error(
         `[weather-water] external API error city=${city} status=${response.status} body=${payload}`
       );
-      return res.status(502).json({ error: 'External water API failed' });
+      console.error('API failed, fallback used');
+      return res.json(
+        await buildWaterDegradedResponse(city, 'Water API down: water data temporarily unavailable')
+      );
     }
 
     const data = await response.json();
@@ -114,10 +135,13 @@ app.get('/water', async (req, res) => {
     if (!Number.isFinite(waterTemperature)) {
       return res.status(200).json({
         source: 'external',
+        degraded: true,
         city: data?.location?.name || city,
         waterTemperature: null,
         unit: 'C',
         waterState: 'Not available for this location',
+        showWater: false,
+        message: 'Pas de donnees eau pour cette ville',
         cityImage,
         fetchedAt: new Date().toISOString(),
       });
@@ -125,16 +149,20 @@ app.get('/water', async (req, res) => {
 
     return res.json({
       source: 'external',
+      degraded: false,
       city: data?.location?.name || city,
       waterTemperature,
       unit: 'C',
       waterState: 'Marine API',
+      showWater: true,
+      message: null,
       cityImage,
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error(`[weather-water] /water failed city=${city}:`, error.message);
-    return res.status(500).json({ error: 'Cannot fetch water temperature right now' });
+    console.error('API failed, fallback used');
+    return res.json(await buildWaterDegradedResponse(city, 'Water API down: fallback mode enabled'));
   }
 });
 

@@ -22,6 +22,33 @@ function buildFallbackCityImage(city) {
   return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)}`;
 }
 
+async function buildAirDegradedResponse(city, message) {
+  return {
+    source: 'fallback',
+    degraded: true,
+    city,
+    temperature: null,
+    unit: 'C',
+    condition: null,
+    message,
+    cityImage: await getCityImage(city),
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
+function buildTimeDegradedResponse(city, message) {
+  return {
+    source: 'fallback',
+    degraded: true,
+    city,
+    timezone: null,
+    localTime: null,
+    localtimeEpoch: null,
+    message,
+    fetchedAt: new Date().toISOString(),
+  };
+}
+
 async function getCityImage(city) {
   if (!UNSPLASH_ACCESS_KEY) {
     return buildFallbackCityImage(city);
@@ -60,10 +87,12 @@ app.get('/air', async (req, res) => {
       const cityImage = await getCityImage(city);
       return res.json({
         source: 'mock',
+        degraded: false,
         city,
         temperature: 23.4,
         unit: 'C',
         condition: 'Clear',
+        message: 'Mock mode enabled',
         cityImage,
         fetchedAt: new Date().toISOString(),
       });
@@ -78,7 +107,10 @@ app.get('/air', async (req, res) => {
     if (!response.ok) {
       const payload = await response.text();
       console.error(`[weather-air] external API error city=${city} status=${response.status} body=${payload}`);
-      return res.status(502).json({ error: 'External weather API failed' });
+      console.error('API failed, fallback used');
+      return res.json(
+        await buildAirDegradedResponse(city, 'Air API down: weather data temporarily unavailable')
+      );
     }
 
     const data = await response.json();
@@ -86,16 +118,19 @@ app.get('/air', async (req, res) => {
 
     return res.json({
       source: 'external',
+      degraded: false,
       city: data?.location?.name || city,
       temperature: data?.current?.temp_c ?? null,
       unit: 'C',
       condition: data?.current?.condition?.text || 'Unknown',
+      message: null,
       cityImage,
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error(`[weather-air] /air failed city=${city}:`, error.message);
-    return res.status(500).json({ error: 'Cannot fetch air temperature right now' });
+    console.error('API failed, fallback used');
+    return res.json(await buildAirDegradedResponse(city, 'Air API down: fallback mode enabled'));
   }
 });
 
@@ -112,9 +147,11 @@ app.get('/time', async (req, res) => {
 
       return res.json({
         source: 'mock',
+        degraded: false,
         city,
         timezone: 'Europe/Paris',
         localTime: new Date().toISOString(),
+        message: 'Mock mode enabled',
         fetchedAt: new Date().toISOString(),
       });
     }
@@ -128,21 +165,25 @@ app.get('/time', async (req, res) => {
     if (!response.ok) {
       const payload = await response.text();
       console.error(`[weather-air] timezone API error city=${city} status=${response.status} body=${payload}`);
-      return res.status(502).json({ error: 'External timezone API failed' });
+      console.error('API failed, fallback used');
+      return res.json(buildTimeDegradedResponse(city, 'Time API down: timezone temporarily unavailable'));
     }
 
     const data = await response.json();
     return res.json({
       source: 'external',
+      degraded: false,
       city: data?.location?.name || city,
       timezone: data?.location?.tz_id || null,
       localTime: data?.location?.localtime || null,
       localtimeEpoch: data?.location?.localtime_epoch || null,
+      message: null,
       fetchedAt: new Date().toISOString(),
     });
   } catch (error) {
     console.error(`[weather-air] /time failed city=${city}:`, error.message);
-    return res.status(500).json({ error: 'Cannot fetch local time right now' });
+    console.error('API failed, fallback used');
+    return res.json(buildTimeDegradedResponse(city, 'Time API down: fallback mode enabled'));
   }
 });
 

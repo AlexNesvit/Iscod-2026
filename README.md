@@ -265,3 +265,19 @@ Stratégie frontend recommandée (ordre d’appel) :
 1. Appeler `/air?city=...` en premier pour afficher vite température air + `cityImage` (background).
 2. Ensuite appeler en parallèle `/time?city=...` et `/water?city=...` (marine).
 3. Si `water` indisponible, afficher uniquement air + time (mode dégradé).
+
+---
+
+## 🛟 Bloc 6 — Error Handling & Mode Dégradé
+
+Objectif : ne jamais faire tomber l’interface.
+
+Règles appliquées :
+- **API down** : le backend renvoie une réponse fallback (`source: "fallback"`, `degraded: true`, `message` explicite).
+- **Pas de données eau** : `waterTemperature: null` et `showWater: false` pour que le frontend masque simplement le bloc eau.
+- **Try/catch partout** : chaque appel externe est protégé pour éviter les crashs backend.
+
+Impact frontend :
+1. L’écran principal s’affiche même si une API externe est indisponible.
+2. Les composants secondaires (eau, heure) peuvent être cachés sans casser la page.
+3. Le message fallback peut être affiché en texte léger (“donnée temporairement indisponible”).

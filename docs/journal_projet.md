@@ -416,3 +416,36 @@ Pour optimiser l’expérience utilisateur sur une seule page :
 	1. appel prioritaire de `/air?city=...` pour afficher immédiatement la météo air et le background (`cityImage`),
 	2. appels secondaires en parallèle : `/time?city=...` et `/water?city=...` (marine),
 	3. en cas d’absence de données eau, l’interface reste fonctionnelle avec air + heure locale.
+
+⸻
+
+## Bloc 6 — Gestion des erreurs et mode dégradé (terminée)
+
+Ce bloc a été implémenté pour garantir la stabilité perçue de l’application même en cas de problème externe.
+
+### API down
+
+Quand un provider externe est indisponible (weather ou timezone) :
+	•	le service ne renvoie pas une erreur bloquante au frontend,
+	•	il renvoie un objet fallback avec :
+	•	`source: "fallback"`
+	•	`degraded: true`
+	•	`message` explicite.
+
+### Pas de données (eau)
+
+Quand aucune donnée eau n’est disponible pour une ville :
+	•	`waterTemperature` est renvoyé à `null`,
+	•	`showWater` est positionné à `false`,
+	•	un message “pas de données” est fourni.
+
+Le frontend peut donc masquer le bloc eau proprement, sans erreur visuelle.
+
+### Fallback & robustesse
+
+Les appels externes sont encapsulés en `try/catch` pour tous les endpoints météo/temps.
+
+Résultat :
+	•	aucun crash backend sur erreur externe,
+	•	expérience utilisateur continue (air + background + éléments disponibles),
+	•	mode dégradé clair et exploitable côté frontend.
