@@ -22,6 +22,30 @@ function buildFallbackCityImage(city) {
   return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)},water`;
 }
 
+function pickWaterTemperatureC(data) {
+  const direct = data?.current?.water_temp_c;
+  if (Number.isFinite(direct)) {
+    return direct;
+  }
+
+  const forecastDay = data?.forecast?.forecastday?.[0];
+  if (!forecastDay) {
+    return null;
+  }
+
+  const fromHour = forecastDay?.hour?.find((entry) => Number.isFinite(entry?.water_temp_c));
+  if (fromHour) {
+    return fromHour.water_temp_c;
+  }
+
+  const fromTide = forecastDay?.tides?.[0]?.tide?.find((entry) => Number.isFinite(entry?.water_temp_c));
+  if (fromTide) {
+    return fromTide.water_temp_c;
+  }
+
+  return null;
+}
+
 async function getCityImage(city) {
   if (!UNSPLASH_ACCESS_KEY) {
     return buildFallbackCityImage(city);
@@ -69,10 +93,10 @@ app.get('/water', async (req, res) => {
       });
     }
 
-    const endpoint = WEATHER_WATER_API_URL.endsWith('/current.json')
+    const endpoint = WEATHER_WATER_API_URL.endsWith('/marine.json')
       ? WEATHER_WATER_API_URL
-      : `${WEATHER_WATER_API_URL.replace(/\/$/, '')}/current.json`;
-    const url = `${endpoint}?key=${encodeURIComponent(WEATHER_WATER_API_KEY)}&q=${encodeURIComponent(city)}&aqi=no`;
+      : `${WEATHER_WATER_API_URL.replace(/\/$/, '')}/marine.json`;
+    const url = `${endpoint}?key=${encodeURIComponent(WEATHER_WATER_API_KEY)}&q=${encodeURIComponent(city)}&days=1`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -85,13 +109,26 @@ app.get('/water', async (req, res) => {
 
     const data = await response.json();
     const cityImage = await getCityImage(city);
+    const waterTemperature = pickWaterTemperatureC(data);
+
+    if (!Number.isFinite(waterTemperature)) {
+      return res.status(200).json({
+        source: 'external',
+        city: data?.location?.name || city,
+        waterTemperature: null,
+        unit: 'C',
+        waterState: 'Not available for this location',
+        cityImage,
+        fetchedAt: new Date().toISOString(),
+      });
+    }
 
     return res.json({
       source: 'external',
       city: data?.location?.name || city,
-      waterTemperature: data?.current?.temp_c ?? null,
+      waterTemperature,
       unit: 'C',
-      waterState: 'Estimated',
+      waterState: 'Marine API',
       cityImage,
       fetchedAt: new Date().toISOString(),
     });
