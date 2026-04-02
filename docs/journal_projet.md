@@ -363,26 +363,23 @@ Le bloc 4 est validé : le service `preferences` est opérationnel, sécurisé p
 
 ⸻
 
-## Bloc 5 — Intégration APIs météo air + water (version initiale livrée)
+## Bloc 5 — Intégration APIs météo air + water + time (terminée)
 
-Ce bloc démarre l’intégration de la couche météo, qui constitue la fonctionnalité différenciante du projet.
+Ce bloc concrétise la fonctionnalité différenciante du projet : la consultation météo air/eau en temps réel par ville.
 
-### Objectif technique de cette première livraison
+### Endpoints livrés
 
-Mettre en place le service `weather-air` avec :
-	•	un appel API externe préparé via `fetch`,
-	•	un mode mock fonctionnel sans clé réelle,
-	•	une gestion d’erreurs robuste (`try/catch`),
-	•	une réponse directe sans stockage base de données.
+	•	`GET /air?city=<ville>` (`weather-air`)
+	•	`GET /water?city=<ville>` (`weather-water`)
+	•	`GET /time?city=<ville>` (`weather-air`)
 
-### Endpoint ajouté
+### Intégration des providers
 
-`GET /air?city=<ville>`
+	•	`weather-air` utilise WeatherAPI `current.json` (température de l’air),
+	•	`weather-water` utilise WeatherAPI `marine.json` (température de l’eau).
+	•	`time` utilise WeatherAPI `timezone.json` (heure locale et fuseau).
 
-Le comportement est le suivant :
-	•	si mode mock activé, le service renvoie une température simulée,
-	•	si clé disponible, le service appelle l’API météo externe et renvoie la température réelle,
-	•	dans les deux cas, la réponse est immédiate et non persistée.
+Les deux services restent compatibles avec un mode mock via variables d’environnement.
 
 ### Appel API externe, pas de stockage, affichage direct
 
@@ -397,30 +394,25 @@ Une URL d’image de ville est ajoutée à la réponse (`cityImage`) :
 	•	fallback simple sans clé via `source.unsplash.com`,
 	•	appel API Unsplash prêt si clé fournie.
 
-### Configuration `.env`
+### Configuration `.env` / `.env.example`
 
 Les variables de ce bloc ont été ajoutées dans `.env` et `.env.example` :
 	•	`WEATHER_AIR_USE_MOCK`
 	•	`WEATHER_AIR_API_URL`
 	•	`WEATHER_AIR_API_KEY`
-	•	`UNSPLASH_API_URL`
-	•	`UNSPLASH_ACCESS_KEY`
-
-### Extension sur `weather-water`
-
-Le même modèle a ensuite été appliqué au service `weather-water` :
-	•	endpoint `GET /water?city=<ville>`,
-	•	appel externe prêt via `fetch`,
-	•	mode mock activable sans clé API,
-	•	gestion `try/catch`,
-	•	pas de stockage base,
-	•	retour direct d’une température de l’eau + `cityImage`.
-
-Variables dédiées ajoutées dans `.env` / `.env.example` :
 	•	`WEATHER_WATER_USE_MOCK`
 	•	`WEATHER_WATER_API_URL`
 	•	`WEATHER_WATER_API_KEY`
+	•	`UNSPLASH_API_URL`
+	•	`UNSPLASH_ACCESS_KEY`
 
 ### Résultat
 
-Le bloc 5 est prêt côté backend pour les deux services météo (`weather-air` et `weather-water`) en mode mock, avec bascule possible vers un provider réel dès qu’une clé API est disponible.
+Le bloc 5 est validé : les services `weather-air` et `weather-water` sont opérationnels avec appels API externes, sans stockage, et réponses prêtes à l’affichage direct côté frontend.
+
+### Orchestration frontend (ordre de chargement)
+
+Pour optimiser l’expérience utilisateur sur une seule page :
+	1. appel prioritaire de `/air?city=...` pour afficher immédiatement la météo air et le background (`cityImage`),
+	2. appels secondaires en parallèle : `/time?city=...` et `/water?city=...` (marine),
+	3. en cas d’absence de données eau, l’interface reste fonctionnelle avec air + heure locale.

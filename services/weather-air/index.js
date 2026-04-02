@@ -99,6 +99,53 @@ app.get('/air', async (req, res) => {
   }
 });
 
+app.get('/time', async (req, res) => {
+  const city = typeof req.query.city === 'string' ? req.query.city.trim() : '';
+
+  if (!city) {
+    return res.status(400).json({ error: 'city query param is required' });
+  }
+
+  try {
+    if (WEATHER_AIR_USE_MOCK || !WEATHER_AIR_API_KEY) {
+      console.log(`[weather-air] mock time response for city=${city}`);
+
+      return res.json({
+        source: 'mock',
+        city,
+        timezone: 'Europe/Paris',
+        localTime: new Date().toISOString(),
+        fetchedAt: new Date().toISOString(),
+      });
+    }
+
+    const endpoint = WEATHER_AIR_API_URL.endsWith('/timezone.json')
+      ? WEATHER_AIR_API_URL
+      : `${WEATHER_AIR_API_URL.replace(/\/$/, '')}/timezone.json`;
+    const url = `${endpoint}?key=${encodeURIComponent(WEATHER_AIR_API_KEY)}&q=${encodeURIComponent(city)}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const payload = await response.text();
+      console.error(`[weather-air] timezone API error city=${city} status=${response.status} body=${payload}`);
+      return res.status(502).json({ error: 'External timezone API failed' });
+    }
+
+    const data = await response.json();
+    return res.json({
+      source: 'external',
+      city: data?.location?.name || city,
+      timezone: data?.location?.tz_id || null,
+      localTime: data?.location?.localtime || null,
+      localtimeEpoch: data?.location?.localtime_epoch || null,
+      fetchedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error(`[weather-air] /time failed city=${city}:`, error.message);
+    return res.status(500).json({ error: 'Cannot fetch local time right now' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`${SERVICE_NAME} service running on port ${PORT}`);
 });

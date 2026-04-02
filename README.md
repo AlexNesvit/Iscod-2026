@@ -231,36 +231,37 @@ Gestion d’erreurs :
 
 ---
 
-## 🌤️ Bloc 5 — Intégration API météo air (première version)
+## 🌤️ Bloc 5 — Intégration APIs météo air + water + time (implémenté)
 
-Le microservice `weather-air` expose maintenant un endpoint métier :
-- `GET /air?city=<ville>`
+Le bloc météo est implémenté avec appels API externes en temps réel, sans stockage.
 
-Principe fonctionnel :
-- appel API externe préparé (`fetch`) avec gestion `try/catch`,
-- mode mock activable sans clé réelle (`WEATHER_AIR_USE_MOCK=true`),
-- aucun stockage en base : la donnée est récupérée et renvoyée directement,
-- affichage direct : réponse renvoie la température + une image de ville (`cityImage`).
+Endpoints :
+- `GET /air?city=<ville>` (service `weather-air`)
+- `GET /water?city=<ville>` (service `weather-water`)
+- `GET /time?city=<ville>` (service `weather-air`)
 
-Variables `.env` liées au bloc :
+Providers utilisés :
+- `weather-air` : WeatherAPI `current.json`
+- `weather-water` : WeatherAPI `marine.json`
+- `time` : WeatherAPI `timezone.json`
+
+Comportement :
+- récupération des données via `fetch` + `try/catch`,
+- aucune persistance en base (ni MongoDB, ni MySQL),
+- affichage direct des données au frontend,
+- ajout d’un `cityImage` (Unsplash / fallback).
+
+Variables `.env` du bloc :
 - `WEATHER_AIR_USE_MOCK`
 - `WEATHER_AIR_API_URL`
 - `WEATHER_AIR_API_KEY`
-- `UNSPLASH_API_URL`
-- `UNSPLASH_ACCESS_KEY`
-
-### Extension `weather-water` (même approche)
-
-Le microservice `weather-water` expose aussi :
-- `GET /water?city=<ville>`
-
-Principe identique :
-- appel API externe prêt via `fetch`,
-- mode mock sans clé (`WEATHER_WATER_USE_MOCK=true`),
-- pas de stockage en base,
-- affichage direct de la température de l’eau + image ville (`cityImage`).
-
-Variables `.env` ajoutées :
 - `WEATHER_WATER_USE_MOCK`
 - `WEATHER_WATER_API_URL`
 - `WEATHER_WATER_API_KEY`
+- `UNSPLASH_API_URL`
+- `UNSPLASH_ACCESS_KEY`
+
+Stratégie frontend recommandée (ordre d’appel) :
+1. Appeler `/air?city=...` en premier pour afficher vite température air + `cityImage` (background).
+2. Ensuite appeler en parallèle `/time?city=...` et `/water?city=...` (marine).
+3. Si `water` indisponible, afficher uniquement air + time (mode dégradé).
