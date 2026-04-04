@@ -87,6 +87,15 @@ body {
   font-weight: 700;
 }
 
+.login-form .register-link {
+  background: transparent;
+  color: #d8ecff;
+  border: 0;
+  text-decoration: underline;
+  padding: 6px 0 2px;
+  text-align: left;
+}
+
 .city-label {
   margin: 0 0 16px;
   opacity: 0.9;

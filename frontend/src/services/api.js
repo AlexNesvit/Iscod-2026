@@ -10,7 +10,18 @@ async function fetchJson(url, options = {}) {
 
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`Request failed (${response.status}): ${text}`);
+    let payload = null;
+
+    try {
+      payload = text ? JSON.parse(text) : null;
+    } catch {
+      payload = { raw: text };
+    }
+
+    const error = new Error(`Request failed (${response.status})`);
+    error.status = response.status;
+    error.payload = payload;
+    throw error;
   }
 
   return response.json();
@@ -97,6 +108,23 @@ export async function login(email, password) {
   }
 
   return fetchJson(`${AUTH_API_BASE}/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ email, password }),
+  });
+}
+
+export async function register(email, password) {
+  if (FRONTEND_MOCK_MODE) {
+    return {
+      message: 'Mock register success',
+      user: { id: 'mock-user-id', email, role: 'user' },
+    };
+  }
+
+  return fetchJson(`${AUTH_API_BASE}/register`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',

@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import SearchForm from '../components/SearchForm';
 import MetricCard from '../components/MetricCard';
 import StatusMessage from '../components/StatusMessage';
-import { addFavorite, getAir, getTime, getWater, login } from '../services/api';
+import { addFavorite, getAir, getTime, getWater, login, register } from '../services/api';
 
 const DEFAULT_BG = 'https://source.unsplash.com/1600x900/?city,skyline';
 const TOKEN_KEY = 'weather_dashboard_token';
@@ -121,7 +121,54 @@ export default function DashboardPage() {
       setShowLogin(false);
       setUiMessage('Logged in. Favorites are now available.');
     } catch (error) {
+      const isAuthError = error?.status === 401;
+      const isUserNotFound = String(error?.payload?.error || '').toLowerCase().includes('invalid credentials');
+
+      if (isAuthError && isUserNotFound) {
+        try {
+          await register(loginEmail, loginPassword);
+          const data = await login(loginEmail, loginPassword);
+          localStorage.setItem(TOKEN_KEY, data.token);
+          localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+          setToken(data.token);
+          setUser(data.user);
+          setShowLogin(false);
+          setUiMessage('Account created automatically and logged in.');
+          return;
+        } catch (registerError) {
+          if (registerError?.status === 409) {
+            setAuthMessage('User exists. Check password and retry.');
+            return;
+          }
+
+          setAuthMessage('Login failed and auto-register unavailable. Dashboard remains accessible.');
+          return;
+        }
+      }
+
       setAuthMessage('Login failed. Dashboard remains available without login.');
+    }
+  }
+
+  async function handleCreateAccount() {
+    setAuthMessage(null);
+
+    try {
+      await register(loginEmail, loginPassword);
+      const data = await login(loginEmail, loginPassword);
+      localStorage.setItem(TOKEN_KEY, data.token);
+      localStorage.setItem(USER_KEY, JSON.stringify(data.user));
+      setToken(data.token);
+      setUser(data.user);
+      setShowLogin(false);
+      setUiMessage('Account created and logged in.');
+    } catch (error) {
+      if (error?.status === 409) {
+        setAuthMessage('Account already exists. Use Sign in.');
+        return;
+      }
+
+      setAuthMessage('Cannot create account right now.');
     }
   }
 
@@ -188,6 +235,9 @@ export default function DashboardPage() {
               placeholder="Password"
             />
             <button type="submit">Sign in</button>
+            <button className="register-link" type="button" onClick={handleCreateAccount}>
+              Not registered? Create account
+            </button>
           </form>
         ) : null}
 
