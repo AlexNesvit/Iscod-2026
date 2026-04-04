@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import SearchForm from '../components/SearchForm';
 import MetricCard from '../components/MetricCard';
 import StatusMessage from '../components/StatusMessage';
-import { addFavorite, getAir, getTime, getWater, login, register } from '../services/api';
+import { addFavorite, getAir, getFavorites, getTime, getWater, login, register } from '../services/api';
 
 const DEFAULT_BG = 'https://source.unsplash.com/1600x900/?city,skyline';
 const TOKEN_KEY = 'weather_dashboard_token';
@@ -32,6 +32,9 @@ export default function DashboardPage() {
   const [loadingAir, setLoadingAir] = useState(false);
   const [loadingWater, setLoadingWater] = useState(false);
   const [loadingTime, setLoadingTime] = useState(false);
+  const [loadingFavorites, setLoadingFavorites] = useState(false);
+  const [favorites, setFavorites] = useState([]);
+  const [showFavorites, setShowFavorites] = useState(false);
   const [showLogin, setShowLogin] = useState(false);
   const [loginEmail, setLoginEmail] = useState('user@mail.com');
   const [loginPassword, setLoginPassword] = useState('StrongPass123');
@@ -43,7 +46,7 @@ export default function DashboardPage() {
 
   async function loadCityData(city) {
     if (!city) {
-      setUiMessage('City is required.');
+      setUiMessage('La ville est obligatoire.');
       return;
     }
 
@@ -63,7 +66,7 @@ export default function DashboardPage() {
       }
     } catch (error) {
       setAir(null);
-      setUiMessage('Air API unavailable. Please retry.');
+      setUiMessage('API air indisponible. Veuillez reessayer.');
     } finally {
       setLoadingAir(false);
     }
@@ -79,7 +82,7 @@ export default function DashboardPage() {
         setUiMessage(waterResult.value.message);
       }
     } else {
-      setWater({ showWater: false, message: 'Water API unavailable (hidden block).' });
+      setWater({ showWater: false, message: 'API eau indisponible (bloc masque).' });
     }
 
     if (timeResult.status === 'fulfilled') {
@@ -88,7 +91,7 @@ export default function DashboardPage() {
         setUiMessage(timeResult.value.message);
       }
     } else {
-      setTime({ message: 'Time API unavailable.' });
+      setTime({ message: 'API heure indisponible.' });
     }
 
     setLoadingWater(false);
@@ -119,7 +122,7 @@ export default function DashboardPage() {
       setToken(data.token);
       setUser(data.user);
       setShowLogin(false);
-      setUiMessage('Logged in. Favorites are now available.');
+      setUiMessage('Connecte. Les favoris sont maintenant disponibles.');
     } catch (error) {
       const isAuthError = error?.status === 401;
       const isUserNotFound = String(error?.payload?.error || '').toLowerCase().includes('invalid credentials');
@@ -133,20 +136,20 @@ export default function DashboardPage() {
           setToken(data.token);
           setUser(data.user);
           setShowLogin(false);
-          setUiMessage('Account created automatically and logged in.');
+          setUiMessage('Compte cree automatiquement et connexion reussie.');
           return;
         } catch (registerError) {
           if (registerError?.status === 409) {
-            setAuthMessage('User exists. Check password and retry.');
+            setAuthMessage('Utilisateur existant. Verifiez le mot de passe.');
             return;
           }
 
-          setAuthMessage('Login failed and auto-register unavailable. Dashboard remains accessible.');
+          setAuthMessage('Connexion echouee et auto-inscription indisponible.');
           return;
         }
       }
 
-      setAuthMessage('Login failed. Dashboard remains available without login.');
+      setAuthMessage('Connexion echouee. Le dashboard reste accessible sans login.');
     }
   }
 
@@ -161,14 +164,14 @@ export default function DashboardPage() {
       setToken(data.token);
       setUser(data.user);
       setShowLogin(false);
-      setUiMessage('Account created and logged in.');
+      setUiMessage('Compte cree et connexion reussie.');
     } catch (error) {
       if (error?.status === 409) {
-        setAuthMessage('Account already exists. Use Sign in.');
+        setAuthMessage('Le compte existe deja. Utilisez Connexion.');
         return;
       }
 
-      setAuthMessage('Cannot create account right now.');
+      setAuthMessage('Creation de compte impossible pour le moment.');
     }
   }
 
@@ -178,7 +181,9 @@ export default function DashboardPage() {
     setToken(null);
     setUser(null);
     setAuthMessage(null);
-    setUiMessage('Logged out. Base weather dashboard is still available.');
+    setFavorites([]);
+    setShowFavorites(false);
+    setUiMessage('Deconnecte. Le dashboard meteo reste disponible.');
   }
 
   async function handleAddFavorite() {
@@ -188,9 +193,31 @@ export default function DashboardPage() {
 
     try {
       await addFavorite(token, activeCity);
-      setUiMessage(`"${activeCity}" added to favorites.`);
+      setUiMessage(`"${activeCity}" ajoute aux favoris.`);
     } catch (error) {
-      setUiMessage('Cannot add favorite right now.');
+      setUiMessage('Impossible d ajouter ce favori maintenant.');
+    }
+  }
+
+  async function handleLoadFavorites() {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    setLoadingFavorites(true);
+    setAuthMessage(null);
+
+    try {
+      const result = await getFavorites(token);
+      setFavorites(Array.isArray(result) ? result : []);
+      setShowFavorites(true);
+      if (!result?.length) {
+        setUiMessage('Aucun favori enregistre pour le moment.');
+      }
+    } catch (error) {
+      setAuthMessage('Impossible de charger les favoris.');
+    } finally {
+      setLoadingFavorites(false);
     }
   }
 
@@ -203,19 +230,19 @@ export default function DashboardPage() {
     >
       <section className="right-time">
         <p className="time-value">{loadingTime ? '...' : formatLocalTime(time?.localTime)}</p>
-        <p className="time-zone">{time?.timezone || 'No timezone data'}</p>
+        <p className="time-zone">{time?.timezone || 'Pas de fuseau horaire'}</p>
       </section>
 
       <aside className="left-panel">
         <header className="panel-header">
-          <h1>Weather Dashboard</h1>
+          <h1>Temperature Air & Eau</h1>
           {isAuthenticated ? (
             <button className="auth-button" type="button" onClick={handleLogout}>
               Déconnexion
             </button>
           ) : (
             <button className="auth-button" type="button" onClick={() => setShowLogin((prev) => !prev)}>
-              Login
+              Connexion
             </button>
           )}
         </header>
@@ -232,18 +259,18 @@ export default function DashboardPage() {
               type="password"
               value={loginPassword}
               onChange={(event) => setLoginPassword(event.target.value)}
-              placeholder="Password"
+              placeholder="Mot de passe"
             />
-            <button type="submit">Sign in</button>
+            <button type="submit">Se connecter</button>
             <button className="register-link" type="button" onClick={handleCreateAccount}>
-              Not registered? Create account
+              Pas inscrit ? Creer un compte
             </button>
           </form>
         ) : null}
 
         {authMessage ? <StatusMessage message={authMessage} /> : null}
 
-        <p className="city-label">City: {activeCity}</p>
+        <p className="city-label">Ville : {activeCity}</p>
 
         <SearchForm
           value={cityInput}
@@ -256,28 +283,48 @@ export default function DashboardPage() {
 
         <section className="cards-grid">
           <MetricCard
-            title="Air Temperature"
+            title="Temperature de l air"
             value={loadingAir ? '...' : air?.temperature != null ? `${air.temperature}°C` : '--'}
-            subtitle={air?.condition || 'No data'}
+            subtitle={air?.condition || 'Pas de donnees'}
           />
 
           {water?.showWater ? (
             <MetricCard
-              title="Water Temperature"
+              title="Temperature de l eau"
               value={loadingWater ? '...' : water?.waterTemperature != null ? `${water.waterTemperature}°C` : '--'}
-              subtitle={water?.waterState || 'No data'}
+              subtitle={water?.waterState || 'Pas de donnees'}
             />
           ) : null}
         </section>
 
         {isAuthenticated ? (
-          <button className="favorite-button" type="button" onClick={handleAddFavorite}>
-            Add to favorites
-          </button>
+          <section className="favorites-actions">
+            <button className="favorite-button" type="button" onClick={handleAddFavorite}>
+              Ajouter aux favoris
+            </button>
+            <button className="favorite-button" type="button" onClick={handleLoadFavorites}>
+              {loadingFavorites ? 'Chargement...' : 'Mes favoris'}
+            </button>
+          </section>
+        ) : null}
+
+        {showFavorites ? (
+          <section className="favorites-panel">
+            <p className="favorites-title">Mes favoris</p>
+            {favorites.length ? (
+              <ul>
+                {favorites.map((item) => (
+                  <li key={item.id}>{item.label || item.city_code}</li>
+                ))}
+              </ul>
+            ) : (
+              <p className="favorites-empty">Aucun favori.</p>
+            )}
+          </section>
         ) : null}
 
         <section className="forecast-panel">
-          <p className="forecast-title">Forecast (mock)</p>
+          <p className="forecast-title">Previsions (mock)</p>
           <div className="forecast-grid">
             {forecast.map((item) => (
               <article key={item.id} className="forecast-item">
@@ -288,7 +335,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {isAuthenticated && user?.email ? <p className="auth-user">Connected as {user.email}</p> : null}
+        {isAuthenticated && user?.email ? <p className="auth-user">Connecte en tant que {user.email}</p> : null}
       </aside>
     </main>
   );

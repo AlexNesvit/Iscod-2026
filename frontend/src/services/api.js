@@ -34,9 +34,9 @@ function buildMockAir(city) {
     city,
     temperature: 22,
     unit: 'C',
-    condition: 'Sunny',
+    condition: 'Ensoleillé',
     cityImage: `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)},city`,
-    message: 'Frontend mock mode enabled',
+    message: 'Mode mock frontend activé',
     fetchedAt: new Date().toISOString(),
   };
 }
@@ -48,9 +48,9 @@ function buildMockWater(city) {
     city,
     waterTemperature: 17,
     unit: 'C',
-    waterState: 'Swimmable',
+    waterState: 'Baignade possible',
     showWater: true,
-    message: 'Frontend mock mode enabled',
+    message: 'Mode mock frontend activé',
     fetchedAt: new Date().toISOString(),
   };
 }
@@ -62,7 +62,7 @@ function buildMockTime(city) {
     city,
     timezone: 'Europe/Paris',
     localTime: new Date().toLocaleString(),
-    message: 'Frontend mock mode enabled',
+    message: 'Mode mock frontend activé',
     fetchedAt: new Date().toISOString(),
   };
 }

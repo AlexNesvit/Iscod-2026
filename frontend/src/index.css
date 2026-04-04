@@ -63,6 +63,43 @@ body {
   margin-top: 12px;
 }
 
+.favorites-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.favorites-actions .favorite-button {
+  margin-top: 0;
+}
+
+.favorites-panel {
+  margin-top: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 12px;
+}
+
+.favorites-title {
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+
+.favorites-panel ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.favorites-panel li {
+  margin: 2px 0;
+}
+
+.favorites-empty {
+  margin: 0;
+  opacity: 0.85;
+}
+
 .login-form {
   display: grid;
   gap: 8px;

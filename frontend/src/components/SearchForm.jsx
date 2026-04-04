@@ -3,12 +3,12 @@ export default function SearchForm({ value, onChange, onSubmit, loadingAir }) {
     <form className="search-form" onSubmit={onSubmit}>
       <input
         type="text"
-        placeholder="Enter city (Paris, Lyon...)"
+        placeholder="Entrez une ville (Paris, Lyon...)"
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />
       <button type="submit" disabled={loadingAir}>
-        {loadingAir ? 'Loading...' : 'Search'}
+        {loadingAir ? 'Chargement...' : 'Rechercher'}
       </button>
     </form>
   );
