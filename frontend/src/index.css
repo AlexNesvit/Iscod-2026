@@ -95,6 +95,23 @@ body {
   margin: 2px 0;
 }
 
+.favorite-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.delete-favorite {
+  border: 0;
+  background: transparent;
+  color: #ffd2d2;
+  font-size: 0.8rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 2px 0;
+}
+
 .favorites-empty {
   margin: 0;
   opacity: 0.85;

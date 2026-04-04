@@ -2,7 +2,16 @@ import { useEffect, useMemo, useState } from 'react';
 import SearchForm from '../components/SearchForm';
 import MetricCard from '../components/MetricCard';
 import StatusMessage from '../components/StatusMessage';
-import { addFavorite, getAir, getFavorites, getTime, getWater, login, register } from '../services/api';
+import {
+  addFavorite,
+  deleteFavorite,
+  getAir,
+  getFavorites,
+  getTime,
+  getWater,
+  login,
+  register,
+} from '../services/api';
 
 const DEFAULT_BG = 'https://source.unsplash.com/1600x900/?city,skyline';
 const TOKEN_KEY = 'weather_dashboard_token';
@@ -221,6 +230,20 @@ export default function DashboardPage() {
     }
   }
 
+  async function handleDeleteFavorite(favoriteId) {
+    if (!isAuthenticated) {
+      return;
+    }
+
+    try {
+      await deleteFavorite(token, favoriteId);
+      setFavorites((prev) => prev.filter((item) => item.id !== favoriteId));
+      setUiMessage('Favori supprime.');
+    } catch (error) {
+      setAuthMessage('Impossible de supprimer ce favori.');
+    }
+  }
+
   return (
     <main
       className="dashboard"
@@ -314,7 +337,12 @@ export default function DashboardPage() {
             {favorites.length ? (
               <ul>
                 {favorites.map((item) => (
-                  <li key={item.id}>{item.label || item.city_code}</li>
+                  <li key={item.id} className="favorite-row">
+                    <span>{item.label || item.city_code}</span>
+                    <button type="button" className="delete-favorite" onClick={() => handleDeleteFavorite(item.id)}>
+                      ❌ Supprimer
+                    </button>
+                  </li>
                 ))}
               </ul>
             ) : (

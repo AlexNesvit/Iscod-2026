@@ -153,3 +153,16 @@ export async function addFavorite(token, city) {
     body: JSON.stringify({ city }),
   });
 }
+
+export async function deleteFavorite(token, favoriteId) {
+  if (FRONTEND_MOCK_MODE) {
+    return { message: 'Favori supprime (mock)' };
+  }
+
+  return fetchJson(`${PREFERENCES_API_BASE}/favorites/${favoriteId}`, {
+    method: 'DELETE',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
