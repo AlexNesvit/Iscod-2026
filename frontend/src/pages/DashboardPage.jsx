@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import SearchForm from '../components/SearchForm';
 import MetricCard from '../components/MetricCard';
 import StatusMessage from '../components/StatusMessage';
@@ -17,19 +17,8 @@ function formatLocalTime(value) {
 }
 
 export default function DashboardPage() {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY));
-  const [user, setUser] = useState(() => {
-    const raw = localStorage.getItem(USER_KEY);
-    if (!raw) {
-      return null;
-    }
-
-    try {
-      return JSON.parse(raw);
-    } catch {
-      return null;
-    }
-  });
+  const [token, setToken] = useState(null);
+  const [user, setUser] = useState(null);
   const [cityInput, setCityInput] = useState('Paris');
   const [activeCity, setActiveCity] = useState('Paris');
   const [air, setAir] = useState(null);
@@ -47,15 +36,12 @@ export default function DashboardPage() {
   const [loginEmail, setLoginEmail] = useState('user@mail.com');
   const [loginPassword, setLoginPassword] = useState('StrongPass123');
   const [authMessage, setAuthMessage] = useState(null);
-  const [uiMessage, setUiMessage] = useState('Search a city to load weather data.');
+  const [uiMessage, setUiMessage] = useState(null);
 
   const backgroundImage = useMemo(() => air?.cityImage || DEFAULT_BG, [air?.cityImage]);
   const isAuthenticated = Boolean(token);
 
-  async function handleSearch(event) {
-    event.preventDefault();
-
-    const city = cityInput.trim();
+  async function loadCityData(city) {
     if (!city) {
       setUiMessage('City is required.');
       return;
@@ -108,6 +94,19 @@ export default function DashboardPage() {
     setLoadingWater(false);
     setLoadingTime(false);
   }
+
+  async function handleSearch(event) {
+    event.preventDefault();
+    await loadCityData(cityInput.trim());
+  }
+
+  useEffect(() => {
+    const defaultCity = 'Paris';
+    setCityInput(defaultCity);
+    setActiveCity(defaultCity);
+    loadCityData(defaultCity);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   async function handleLogin(event) {
     event.preventDefault();
