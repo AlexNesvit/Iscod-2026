@@ -107,9 +107,21 @@ export default function DashboardPage() {
     setLoadingTime(false);
   }
 
-  async function handleSearch(event) {
-    event.preventDefault();
-    await loadCityData(cityInput.trim());
+  async function handleSearch(input) {
+    const cityFromInput =
+      typeof input === 'string' ? input.trim() : typeof cityInput === 'string' ? cityInput.trim() : '';
+
+    if (input && typeof input !== 'string' && typeof input.preventDefault === 'function') {
+      input.preventDefault();
+    }
+
+    if (!cityFromInput) {
+      setUiMessage('La ville est obligatoire.');
+      return;
+    }
+
+    setCityInput(cityFromInput);
+    await loadCityData(cityFromInput);
   }
 
   useEffect(() => {
@@ -337,9 +349,22 @@ export default function DashboardPage() {
             {favorites.length ? (
               <ul>
                 {favorites.map((item) => (
-                  <li key={item.id} className="favorite-row">
+                  <li
+                    key={item.id}
+                    className="favorite-row"
+                    onClick={() => handleSearch(item.label || item.city_code)}
+                    style={{ cursor: 'pointer' }}
+                    title="Cliquer pour charger cette ville"
+                  >
                     <span>{item.label || item.city_code}</span>
-                    <button type="button" className="delete-favorite" onClick={() => handleDeleteFavorite(item.id)}>
+                    <button
+                      type="button"
+                      className="delete-favorite"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleDeleteFavorite(item.id);
+                      }}
+                    >
                       ❌ Supprimer
                     </button>
                   </li>
