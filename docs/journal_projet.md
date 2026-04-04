@@ -570,3 +570,75 @@ Commande utilisée :
 ```bash
 npm test
 ```
+
+⸻
+
+## Bloc 9 — Conception
+
+Dans cette phase, une réflexion de conception a été menée afin de structurer l’application de manière cohérente, évolutive et alignée avec des pratiques professionnelles.
+
+### Choix d’architecture
+
+Le choix d’une architecture microservices a été retenu afin de :
+	•	séparer les responsabilités (authentification, préférences, météo),
+	•	faciliter la maintenance,
+	•	permettre une évolution indépendante de chaque service.
+
+Chaque service expose une API REST simple et communique via HTTP, sans dépendance directe aux autres services.
+
+### Modélisation fonctionnelle (UML)
+
+Une modélisation des cas d’usage a permis d’identifier les interactions principales :
+	•	consultation météo par ville,
+	•	authentification utilisateur,
+	•	gestion des favoris,
+	•	gestion des alertes.
+
+Cette modélisation a guidé la structuration des endpoints backend et des composants frontend.
+
+### Modélisation des données
+
+Le choix d’une architecture polyglotte repose sur :
+	•	MongoDB pour les données utilisateurs (flexibilité, document),
+	•	MySQL pour les données métier (cohérence relationnelle).
+
+Ce découpage permet d’adapter le stockage aux contraintes fonctionnelles de chaque domaine.
+
+### Sécurité
+
+La sécurité a été intégrée dès la conception :
+	•	authentification JWT avec expiration,
+	•	hash des mots de passe avec bcrypt,
+	•	middleware de protection des routes sensibles,
+	•	isolation des données par utilisateur (user_id issu du token),
+	•	externalisation des secrets via variables d’environnement.
+
+### Performance
+
+Des choix ont été faits pour optimiser l’expérience utilisateur :
+	•	chargement prioritaire des données critiques (/air),
+	•	chargement parallèle des données secondaires (/water, /time),
+	•	absence de stockage inutile (données récupérées en temps réel).
+
+### Disponibilité et résilience
+
+Une stratégie de tolérance aux erreurs a été mise en place :
+	•	gestion systématique des erreurs via try/catch,
+	•	implémentation d’un mode dégradé (fallback),
+	•	absence de crash backend en cas d’API externe indisponible,
+	•	continuité d’affichage côté frontend.
+
+### Résultat
+
+Ce travail de conception permet d’obtenir une application :
+	•	modulaire,
+	•	sécurisée,
+	•	résiliente,
+	•	et adaptée à une démonstration en conditions réelles.
+
+### UML ultra-simple
+
+Des schémas visuels minimaux ont été ajoutés pour la soutenance :
+
+- Architecture + use cases : ![UML bloc 9](uml-bloc9-simple.svg)
+- Use case only (slide) : ![UML use case bloc 9](uml-bloc9-usecase.svg)

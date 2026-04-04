@@ -393,3 +393,66 @@ Le script lance :
 ```bash
 NODE_ENV=test node --test tests/*.test.js
 ```
+
+---
+
+## 🧠 Bloc 9 — Conception
+
+Dans le cadre de ce projet, une réflexion de conception a été menée afin de structurer l’application selon des principes proches d’un environnement professionnel.
+
+### UML (modélisation)
+
+Une modélisation simplifiée a été réalisée pour représenter les interactions principales du système :
+- Use case :
+- consulter la météo (air, eau, heure)
+- se connecter / s’inscrire
+- gérer ses favoris
+- ajouter / supprimer un favori
+- Architecture globale :
+- séparation en microservices (auth, preferences, weather-air, weather-water, time)
+- communication via HTTP (REST)
+- frontend React consommant les services backend
+
+### Modélisation des données
+- MongoDB (auth) :
+- stockage des utilisateurs (email, passwordHash, role)
+- MySQL (preferences) :
+- stockage des favoris (city, user_id)
+- stockage des alertes (city, threshold, user_id)
+
+Ce choix illustre une approche polyglotte adaptée aux besoins métier.
+
+### Sécurité
+
+Les principes suivants ont été appliqués :
+- authentification via JWT (token signé avec expiration),
+- mots de passe hashés avec bcrypt (aucun stockage en clair),
+- routes protégées via middleware (verifyToken),
+- séparation des accès base de données (MongoDB / MySQL),
+- variables sensibles externalisées via .env.
+
+### Performance
+- architecture microservices permettant une montée en charge indépendante
+- appels API externes sans stockage intermédiaire (réduction de complexité)
+- rendu frontend progressif :
+- /air en priorité
+- /water et /time en parallèle
+
+### Disponibilité
+- mise en place d’un mode dégradé (fallback) :
+- aucune erreur bloquante côté frontend
+- retour d’objets fallback (degraded: true)
+- affichage conditionnel des blocs (ex : eau masquée si indisponible)
+- conteneurisation Docker :
+- environnement reproductible
+- services isolés
+- démarrage global via docker compose
+
+### Complément de conception
+
+Le projet conserve volontairement un périmètre lisible pour l’examen : API REST simples, logique métier claire par service, et comportement frontend robuste même si une API externe tombe. Cette approche facilite la soutenance car chaque choix technique peut être justifié rapidement.
+
+### UML ultra-simple (image)
+
+- Architecture + use cases : ![UML bloc 9](docs/uml-bloc9-simple.svg)
+- Use case only (slide) : ![UML use case bloc 9](docs/uml-bloc9-usecase.svg)

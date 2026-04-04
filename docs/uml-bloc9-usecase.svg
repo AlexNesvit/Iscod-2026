@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+  <defs>
+    <style>
+      .title { font: 700 30px Arial, sans-serif; fill: #102a43; }
+      .label { font: 600 20px Arial, sans-serif; fill: #102a43; }
+      .small { font: 500 16px Arial, sans-serif; fill: #102a43; }
+      .sys { fill: #f4f9ff; stroke: #2f6fbb; stroke-width: 2.5; rx: 16; ry: 16; }
+      .use { fill: #ffffff; stroke: #2f6fbb; stroke-width: 2; }
+      .line { stroke: #2f6fbb; stroke-width: 2.2; fill: none; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1200" height="760" fill="#fbfdff" />
+  <text x="40" y="52" class="title">Bloc 9 - UML Use Case (version slide)</text>
+
+  <line x1="160" y1="150" x2="160" y2="260" class="line"/>
+  <circle cx="160" cy="125" r="25" fill="none" stroke="#2f6fbb" stroke-width="2.5"/>
+  <line x1="160" y1="175" x2="125" y2="225" class="line"/>
+  <line x1="160" y1="175" x2="195" y2="225" class="line"/>
+  <line x1="130" y1="195" x2="190" y2="195" class="line"/>
+  <text x="95" y="295" class="label">Utilisateur</text>
+
+  <rect x="300" y="90" width="840" height="600" class="sys"/>
+  <text x="350" y="135" class="label">Systeme "Temperature Air & Eau"</text>
+
+  <ellipse cx="520" cy="220" rx="180" ry="48" class="use"/>
+  <text x="418" y="227" class="small">Consulter meteo (air/eau/heure)</text>
+
+  <ellipse cx="860" cy="220" rx="170" ry="48" class="use"/>
+  <text x="792" y="227" class="small">Se connecter</text>
+
+  <ellipse cx="520" cy="360" rx="180" ry="48" class="use"/>
+  <text x="448" y="367" class="small">S'inscrire</text>
+
+  <ellipse cx="860" cy="360" rx="170" ry="48" class="use"/>
+  <text x="782" y="367" class="small">Voir mes favoris</text>
+
+  <ellipse cx="520" cy="500" rx="180" ry="48" class="use"/>
+  <text x="433" y="507" class="small">Ajouter un favori</text>
+
+  <ellipse cx="860" cy="500" rx="170" ry="48" class="use"/>
+  <text x="773" y="507" class="small">Supprimer un favori</text>
+
+  <line x1="185" y1="190" x2="340" y2="220" class="line"/>
+  <line x1="185" y1="198" x2="690" y2="220" class="line"/>
+  <line x1="185" y1="205" x2="340" y2="360" class="line"/>
+  <line x1="185" y1="212" x2="690" y2="360" class="line"/>
+  <line x1="185" y1="220" x2="340" y2="500" class="line"/>
+  <line x1="185" y1="228" x2="690" y2="500" class="line"/>
+</svg>
