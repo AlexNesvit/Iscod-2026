@@ -524,3 +524,49 @@ La séparation est effective :
 Le bloc 7 est validé : une interface React claire, démontrable et alignée avec les microservices backend est en place, avec appels API réels, mode mock et gestion du mode dégradé.
 
 La couche visuelle et les messages utilisateur ont été harmonisés en français pour la soutenance (dashboard, actions, retours d’état).
+
+⸻
+
+## Bloc 8 — Tests fonctionnels minimaux (terminé)
+
+L’objectif de ce bloc était de mettre en place un socle de tests simple, démontrable et suffisant pour l’examen, sans sur-ingénierie.
+
+### Approche retenue
+
+- tests Node natifs avec `node:test`,
+- tests HTTP avec `supertest`,
+- couverture orientée endpoints critiques,
+- focus sur lisibilité (happy path + un error path).
+
+### Ajustements techniques réalisés
+
+Pour rendre les microservices testables sans changer leur architecture :
+
+- export de chaque application Express (`module.exports = app`),
+- démarrage serveur conditionnel (`if (require.main === module)`),
+- connexion DB auto-désactivée en mode test pour `auth` et `preferences`.
+
+Le comportement normal en exécution Docker reste inchangé.
+
+### Endpoints couverts
+
+- `GET /health` : auth, preferences, weather-air, weather-water, time
+- `POST /login` : succès + credentials invalides
+- `GET /air` : succès + `400` si `city` absente
+- `GET /water` : succès + `400` si `city` absente
+- `GET /time` : succès + `400` si `city` absente
+- `GET /favorites` : `401` sans token (protection JWT vérifiée)
+
+### Résultat
+
+Suite de tests exécutée avec succès :
+
+- `14` tests
+- `14` pass
+- `0` fail
+
+Commande utilisée :
+
+```bash
+npm test
+```

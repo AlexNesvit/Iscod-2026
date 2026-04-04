@@ -366,3 +366,30 @@ frontend:
     - weather-water
     - time
 ```
+
+---
+
+## ✅ Bloc 8 — Tests fonctionnels minimaux (implémenté)
+
+Une base de tests simple et lisible a été ajoutée avec `node:test` + `supertest`, sans modifier l’architecture microservices.
+
+### Endpoints couverts
+
+- `GET /health` : auth, preferences, weather-air, weather-water, time
+- `POST /login` : happy path + invalid credentials
+- `GET /air` : happy path + erreur `400` (city manquante)
+- `GET /water` : happy path + erreur `400` (city manquante)
+- `GET /time` : happy path + erreur `400` (city manquante)
+- `GET /favorites` : vérification protection (`401` sans token)
+
+### Lancer les tests
+
+```bash
+npm test
+```
+
+Le script lance :
+
+```bash
+NODE_ENV=test node --test tests/*.test.js
+```

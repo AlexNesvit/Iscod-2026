@@ -41,7 +41,9 @@ async function checkMySqlConnection() {
   }
 }
 
-checkMySqlConnection();
+if (process.env.NODE_ENV !== 'test') {
+  checkMySqlConnection();
+}
 
 app.use('/favorites', verifyToken);
 app.use('/alerts', verifyToken);
@@ -189,6 +191,10 @@ app.get('/health', (req, res) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`${SERVICE_NAME} service running on port ${PORT}`);
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`${SERVICE_NAME} service running on port ${PORT}`);
+  });
+}
+
+module.exports = app;
