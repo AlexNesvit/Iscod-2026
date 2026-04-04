@@ -1,10 +1,12 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
+const cors = require('cors');
 const verifyToken = require('./middleware/verifyToken');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3002;
 const SERVICE_NAME = 'preferences';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 const MYSQL_CONFIG = {
   host: process.env.MYSQL_HOST || 'localhost',
   port: Number(process.env.MYSQL_PORT) || 3306,
@@ -21,6 +23,11 @@ const pool = mysql.createPool({
 
 let mysqlConnected = false;
 
+app.use(
+  cors({
+    origin: CORS_ORIGIN,
+  })
+);
 app.use(express.json());
 
 async function checkMySqlConnection() {

@@ -4,6 +4,7 @@ services:
     command: node services/auth/index.js
     environment:
       PORT: ${AUTH_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
       MONGO_URI: ${AUTH_MONGO_URI}
       JWT_SECRET: ${JWT_SECRET}
       JWT_EXPIRES_IN: ${JWT_EXPIRES_IN}
@@ -19,6 +20,7 @@ services:
     command: node services/preferences/index.js
     environment:
       PORT: ${PREFERENCES_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
       JWT_SECRET: ${JWT_SECRET}
       MYSQL_HOST: mysql
       MYSQL_PORT: ${MYSQL_PORT}
@@ -36,6 +38,7 @@ services:
     command: node services/weather-air/index.js
     environment:
       PORT: ${WEATHER_AIR_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
       WEATHER_AIR_USE_MOCK: ${WEATHER_AIR_USE_MOCK}
       WEATHER_AIR_API_URL: ${WEATHER_AIR_API_URL}
       WEATHER_AIR_API_KEY: ${WEATHER_AIR_API_KEY}
@@ -49,6 +52,7 @@ services:
     command: node services/weather-water/index.js
     environment:
       PORT: ${WEATHER_WATER_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
       WEATHER_WATER_USE_MOCK: ${WEATHER_WATER_USE_MOCK}
       WEATHER_WATER_API_URL: ${WEATHER_WATER_API_URL}
       WEATHER_WATER_API_KEY: ${WEATHER_WATER_API_KEY}
@@ -56,6 +60,18 @@ services:
       UNSPLASH_ACCESS_KEY: ${UNSPLASH_ACCESS_KEY}
     ports:
       - "${WEATHER_WATER_PORT}:${WEATHER_WATER_PORT}"
+
+  time:
+    build: .
+    command: node services/time/index.js
+    environment:
+      PORT: ${TIME_PORT}
+      CORS_ORIGIN: ${CORS_ORIGIN}
+      TIME_USE_MOCK: ${TIME_USE_MOCK}
+      TIME_API_URL: ${TIME_API_URL}
+      TIME_API_KEY: ${TIME_API_KEY}
+    ports:
+      - "${TIME_PORT}:${TIME_PORT}"
 
   mongo:
     image: mongo:7

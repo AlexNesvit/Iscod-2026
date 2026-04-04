@@ -1,14 +1,22 @@
 const express = require('express');
+const cors = require('cors');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3004;
 const SERVICE_NAME = 'weather-water';
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 const WEATHER_WATER_API_URL =
   process.env.WEATHER_WATER_API_URL || 'http://api.weatherapi.com/v1';
 const WEATHER_WATER_API_KEY = process.env.WEATHER_WATER_API_KEY || '';
 const WEATHER_WATER_USE_MOCK = String(process.env.WEATHER_WATER_USE_MOCK || 'true') === 'true';
 const UNSPLASH_API_URL = process.env.UNSPLASH_API_URL || 'https://api.unsplash.com/photos/random';
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY || '';
+
+app.use(
+  cors({
+    origin: CORS_ORIGIN,
+  })
+);
 
 app.get('/health', (req, res) => {
   res.json({

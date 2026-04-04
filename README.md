@@ -281,3 +281,80 @@ Impact frontend :
 1. L’écran principal s’affiche même si une API externe est indisponible.
 2. Les composants secondaires (eau, heure) peuvent être cachés sans casser la page.
 3. Le message fallback peut être affiché en texte léger (“donnée temporairement indisponible”).
+
+---
+
+## 🖥️ Frontend (React + Vite)
+
+Le frontend est dans un dossier séparé `frontend/` (séparation claire frontend/backend).
+
+Structure frontend :
+- `frontend/src/components/`
+- `frontend/src/pages/`
+- `frontend/src/services/`
+
+Lancement local :
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Le serveur Vite démarre sur `http://localhost:3000`.
+
+### Appels API frontend
+
+Le frontend utilise :
+- `GET http://localhost:3003/air?city=...`
+- `GET http://localhost:3004/water?city=...`
+- `GET http://localhost:3005/time?city=...`
+
+Ordre de chargement UX :
+1. `/air` d’abord (affichage rapide + background via `cityImage`).
+2. `/water` et `/time` ensuite en parallèle.
+3. si `water.showWater=false`, le bloc eau est masqué.
+4. si `degraded=true`, le message fallback est affiché.
+
+### Authentification optionnelle
+
+Le dashboard est accessible sans login :
+- recherche ville, météo air/eau, heure locale disponibles immédiatement.
+
+Le login est optionnel et sert uniquement aux fonctionnalités avancées :
+- bouton `Login` / `Déconnexion`,
+- token stocké dans `localStorage`,
+- bouton `Add to favorites` affiché uniquement si l’utilisateur est connecté.
+
+En cas d’erreur login :
+- aucune redirection bloquante,
+- aucune interruption du dashboard.
+
+### Mock mode frontend
+
+Le frontend peut fonctionner sans API externe via :
+- `VITE_FRONTEND_MOCK_MODE=true`
+
+Variables dans `frontend/.env.example` :
+- `VITE_FRONTEND_MOCK_MODE`
+- `VITE_AIR_API_BASE`
+- `VITE_WATER_API_BASE`
+- `VITE_TIME_API_BASE`
+- `VITE_PREFERENCES_API_BASE`
+
+### Docker (préparation future)
+
+Exemple d’intégration future dans `docker-compose.yml` (port 3000) :
+
+```yaml
+frontend:
+  build: ./frontend
+  command: npm run dev -- --host 0.0.0.0 --port 3000
+  ports:
+    - "3000:3000"
+  depends_on:
+    - auth
+    - preferences
+    - weather-air
+    - weather-water
+    - time
+```

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 const User = require('./models/User');
 const verifyToken = require('./middleware/verifyToken');
 
@@ -12,9 +13,15 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/auth_db';
 const JWT_SECRET = process.env.JWT_SECRET || 'change_this_secret';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '1h';
 const SALT_ROUNDS = Number(process.env.BCRYPT_SALT_ROUNDS) || 10;
+const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 
 let mongoConnected = false;
 
+app.use(
+  cors({
+    origin: CORS_ORIGIN,
+  })
+);
 app.use(express.json());
 
 async function connectMongo() {

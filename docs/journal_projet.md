@@ -449,3 +449,68 @@ Résultat :
 	•	aucun crash backend sur erreur externe,
 	•	expérience utilisateur continue (air + background + éléments disponibles),
 	•	mode dégradé clair et exploitable côté frontend.
+
+⸻
+
+## Bloc 7 — Frontend React (Vite) (terminée)
+
+Ce bloc introduit une interface utilisateur dédiée, totalement séparée du backend, dans un dossier `frontend/`.
+
+### Architecture frontend
+
+Le frontend a été créé avec React via Vite, en composants fonctionnels + hooks.
+
+Structure mise en place :
+	•	`src/components/` (UI réutilisable),
+	•	`src/pages/` (écran principal),
+	•	`src/services/` (couche appels API).
+
+Cette organisation garantit une séparation claire des responsabilités et facilite la démonstration en contexte d’examen.
+
+### Appels API
+
+Le frontend consomme les microservices existants via une couche `api.js` :
+	•	`/air` (weather-air, port 3003),
+	•	`/water` (weather-water, port 3004),
+	•	`/time` (service time, port 3005),
+	•	`/login` (auth, port 3001),
+	•	`/favorites` (preferences, port 3002).
+
+Un mode mock frontend est prévu (`VITE_FRONTEND_MOCK_MODE=true`) pour garantir une démonstration fonctionnelle même sans APIs externes.
+
+### Affichage et UX
+
+Le dashboard suit une logique simple et performante :
+	1. chargement prioritaire de l’air (`/air`) pour afficher immédiatement la ville + background,
+	2. chargement secondaire en parallèle de l’eau (`/water`) et de l’heure locale (`/time`),
+	3. masquage du bloc eau si `showWater=false`,
+	4. affichage des messages fallback si `degraded=true`.
+
+Le frontend reste non bloquant pendant les chargements, avec un rendu progressif des cartes.
+
+Le layout a été ajusté en style weather dashboard :
+	•	carte principale à gauche (air + recherche),
+	•	heure en grand en haut à droite,
+	•	background fullscreen via `cityImage`,
+	•	bloc forecast léger (mock) sous la carte principale.
+
+### Authentification optionnelle
+
+L’authentification n’est plus obligatoire :
+	•	le dashboard reste entièrement accessible sans login,
+	•	le login devient un plus pour les fonctionnalités favorites,
+	•	token utilisateur stocké en `localStorage`,
+	•	bouton `Add to favorites` visible uniquement en mode connecté.
+
+En cas d’échec login, l’UI n’est pas bloquée : la consultation météo continue normalement.
+
+### Séparation frontend / backend
+
+La séparation est effective :
+	•	frontend indépendant sur son propre runtime Vite (port 3000),
+	•	backends sur ports dédiés (3003/3004/3005/…),
+	•	CORS pris en compte côté services météo/time pour autoriser l’origine frontend.
+
+### Résultat du bloc
+
+Le bloc 7 est validé : une interface React claire, démontrable et alignée avec les microservices backend est en place, avec appels API réels, mode mock et gestion du mode dégradé.
