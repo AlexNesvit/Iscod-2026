@@ -323,11 +323,19 @@ Le dashboard est accessible sans login :
 Le login est optionnel et sert uniquement aux fonctionnalités avancées :
 - bouton `Login` / `Déconnexion`,
 - token stocké dans `localStorage`,
-- bouton `Add to favorites` affiché uniquement si l’utilisateur est connecté.
+- bouton `Ajouter aux favoris` affiché uniquement si l’utilisateur est connecté.
+
+Gestion des favoris (mode connecté) :
+- bouton `Mes favoris` pour charger la liste depuis `GET /favorites`,
+- bouton `❌ Supprimer` sur chaque ligne (ex: `London  ❌ Supprimer`) via `DELETE /favorites/:id`,
+- ajout via `POST /favorites`.
 
 En cas d’erreur login :
 - aucune redirection bloquante,
 - aucune interruption du dashboard.
+
+Note UI :
+- l’interface dashboard est désormais en français (titres, boutons, messages, états fallback).
 
 ### Mock mode frontend
 

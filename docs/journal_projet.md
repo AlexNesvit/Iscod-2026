@@ -500,7 +500,15 @@ L’authentification n’est plus obligatoire :
 	•	le dashboard reste entièrement accessible sans login,
 	•	le login devient un plus pour les fonctionnalités favorites,
 	•	token utilisateur stocké en `localStorage`,
-	•	bouton `Add to favorites` visible uniquement en mode connecté.
+	•	bouton `Ajouter aux favoris` visible uniquement en mode connecté.
+
+Pour fluidifier la démonstration, un scénario auto-inscription a été ajouté :
+	•	si le login échoue car utilisateur inexistant, le frontend tente `register` puis relance `login`.
+
+Gestion des favoris en mode connecté :
+	•	chargement via bouton `Mes favoris`,
+	•	affichage de la liste des villes enregistrées,
+	•	suppression unitaire par ligne via bouton `❌ Supprimer` (appel `DELETE /favorites/:id`).
 
 En cas d’échec login, l’UI n’est pas bloquée : la consultation météo continue normalement.
 
@@ -514,3 +522,5 @@ La séparation est effective :
 ### Résultat du bloc
 
 Le bloc 7 est validé : une interface React claire, démontrable et alignée avec les microservices backend est en place, avec appels API réels, mode mock et gestion du mode dégradé.
+
+La couche visuelle et les messages utilisateur ont été harmonisés en français pour la soutenance (dashboard, actions, retours d’état).
