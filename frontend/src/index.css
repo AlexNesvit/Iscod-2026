@@ -102,6 +102,10 @@ body {
   gap: 10px;
 }
 
+.favorite-row:hover span {
+  text-decoration: underline;
+}
+
 .delete-favorite {
   border: 0;
   background: transparent;
@@ -287,11 +291,34 @@ body {
   opacity: 0.85;
 }
 
+@media (max-width: 1024px) {
+  .dashboard {
+    padding: 16px;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .left-panel {
+    width: 100%;
+    max-width: 760px;
+  }
+
+  .right-time {
+    text-align: left;
+    margin-top: 0;
+  }
+
+  .time-value {
+    font-size: 3rem;
+  }
+}
+
 @media (max-width: 768px) {
   .dashboard {
     padding: 12px;
     align-items: stretch;
-    flex-direction: column-reverse;
+    flex-direction: column;
     gap: 12px;
   }
 
@@ -306,5 +333,40 @@ body {
 
   .time-value {
     font-size: 2.2rem;
+  }
+
+  .search-form {
+    grid-template-columns: 1fr;
+  }
+
+  .search-form button {
+    width: 100%;
+  }
+
+  .favorites-actions {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 480px) {
+  .left-panel {
+    padding: 14px;
+  }
+
+  .panel-header {
+    flex-wrap: wrap;
+  }
+
+  .left-panel h1 {
+    font-size: 1.55rem;
+  }
+
+  .favorite-row {
+    flex-wrap: wrap;
+    align-items: flex-start;
+  }
+
+  .delete-favorite {
+    margin-left: 0;
   }
 }
