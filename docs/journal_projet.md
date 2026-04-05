@@ -55,6 +55,18 @@ Cette roadmap n’est pas figée et peut être modifiée en fonction des besoins
 
 ⸻
 
+## Conception UI (références Figma)
+
+Pendant la phase de conception (avant les blocs d’implémentation), deux références Figma ont servi à cadrer l’interface :
+	•	maquette principale Iscod 2026 :
+https://www.figma.com/design/hIN7ia6qU5J7RaelycL9VX/Iscod-2026?node-id=0-1&t=xsEEvhitUeh99BQA-1
+	•	référence visuelle Warframe (style météo / ambiance UI) :
+https://www.figma.com/design/G6aY42s4Xtvcw3Yx61wxrt/Warframe--weather?node-id=0-1&t=rQc8eWcp0R1yPBNx-1
+
+Ces supports ont guidé les choix de layout, de hiérarchie visuelle et d’ambiance globale du dashboard avant l’intégration React.
+
+⸻
+
 ## Choix méthodologiques initiaux
 
 Dès le départ, j’ai fait le choix de :

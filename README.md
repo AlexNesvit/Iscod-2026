@@ -60,6 +60,15 @@ root/
 
 ---
 
+## 🎨 Références Figma (Conception UI)
+
+- **Maquette principale Iscod 2026 :** https://www.figma.com/design/hIN7ia6qU5J7RaelycL9VX/Iscod-2026?node-id=0-1&t=xsEEvhitUeh99BQA-1
+- **Référence visuelle Warframe (weather style) :** https://www.figma.com/design/G6aY42s4Xtvcw3Yx61wxrt/Warframe--weather?node-id=0-1&t=rQc8eWcp0R1yPBNx-1
+
+Ces maquettes ont été utilisées pendant la phase de conception (wireframes/identité visuelle), avant les blocs d’implémentation backend et frontend.
+
+---
+
 ## 🚀 Lancement (Docker Compose)
 
 1. Créer le fichier `.env` à la racine (ou partir de `.env.example`).
@@ -80,14 +89,6 @@ Le projet utilise les variables `.env` directement dans `docker-compose.yml`.
 - **User stories / Backlog :** voir [docs/ser_stories.md](docs/user_stories.md)
 - **Notes de projet / journal de bord (interne) :** voir [docs/journal_projet.md](docs/journal_projet.md)
 - **Swagger API Docs :** (à définir)
-
----
-
-
-Figma: Mettre en place un design systémique
-Checked Atomic design, le principe - (4 min)
-
----
 
 ## 🛠️ Roadmap de développement (notes personnelles)
 
