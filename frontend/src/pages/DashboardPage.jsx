@@ -13,7 +13,8 @@ import {
   register,
 } from '../services/api';
 
-const DEFAULT_BG = 'https://source.unsplash.com/1600x900/?city,skyline';
+const DEFAULT_BG =
+  'https://images.unsplash.com/photo-1743639337565-87c04183d160?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w5MTIxMDh8MHwxfHJhbmRvbXx8fHx8fHx8fDE3NzU5MjM0NjV8&ixlib=rb-4.1.0&q=80&w=1080';
 const TOKEN_KEY = 'weather_dashboard_token';
 const USER_KEY = 'weather_dashboard_user';
 
@@ -49,8 +50,15 @@ export default function DashboardPage() {
   const [loginPassword, setLoginPassword] = useState('StrongPass123');
   const [authMessage, setAuthMessage] = useState(null);
   const [uiMessage, setUiMessage] = useState(null);
+  const [hasUserSearched, setHasUserSearched] = useState(false);
 
-  const backgroundImage = useMemo(() => air?.cityImage || DEFAULT_BG, [air?.cityImage]);
+  const backgroundImage = useMemo(() => {
+    if (!hasUserSearched) {
+      return DEFAULT_BG;
+    }
+
+    return air?.cityImage || DEFAULT_BG;
+  }, [hasUserSearched, air?.cityImage]);
   const isAuthenticated = Boolean(token);
 
   async function loadCityData(city) {
@@ -120,6 +128,7 @@ export default function DashboardPage() {
       return;
     }
 
+    setHasUserSearched(true);
     setCityInput(cityFromInput);
     await loadCityData(cityFromInput);
   }
