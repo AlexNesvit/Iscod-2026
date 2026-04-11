@@ -19,11 +19,26 @@ const TOKEN_KEY = 'weather_dashboard_token';
 const USER_KEY = 'weather_dashboard_user';
 
 function formatLocalTime(value) {
-  if (!value) {
-    return '--';
+  if (!value) return '--';
+
+  const raw = String(value).trim();
+  const match = raw.match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}:\d{2})/);
+  if (match) {
+    const [, year, month, day, hhmm] = match;
+    return { time: hhmm, date: `${day}-${month}-${year}` };
   }
 
-  return String(value);
+  const parsed = new Date(raw);
+  if (!Number.isNaN(parsed.getTime())) {
+    const day = String(parsed.getDate()).padStart(2, '0');
+    const month = String(parsed.getMonth() + 1).padStart(2, '0');
+    const year = parsed.getFullYear();
+    const hh = String(parsed.getHours()).padStart(2, '0');
+    const mm = String(parsed.getMinutes()).padStart(2, '0');
+    return { time: `${hh}:${mm}`, date: `${day}-${month}-${year}` };
+  }
+
+  return { time: raw, date: '--' };
 }
 
 export default function DashboardPage() {
@@ -51,6 +66,7 @@ export default function DashboardPage() {
   const [authMessage, setAuthMessage] = useState(null);
   const [uiMessage, setUiMessage] = useState(null);
   const [hasUserSearched, setHasUserSearched] = useState(false);
+  const timeInfo = formatLocalTime(time?.localTime);
 
   const backgroundImage = useMemo(() => {
     if (!hasUserSearched) {
@@ -273,13 +289,14 @@ export default function DashboardPage() {
       }}
     >
       <section className="right-time">
-        <p className="time-value">{loadingTime ? '...' : formatLocalTime(time?.localTime)}</p>
+        <p className="time-value">{loadingTime ? '...' : timeInfo.time}</p>
+        <p className="time-date">{loadingTime ? '--' : timeInfo.date}</p>
         <p className="time-zone">{time?.timezone || 'Pas de fuseau horaire'}</p>
       </section>
 
       <aside className="left-panel">
         <header className="panel-header">
-          <h1>Temperature Air & Eau</h1>
+          <h1>Weather Air & Eau</h1>
           {isAuthenticated ? (
             <button className="auth-button" type="button" onClick={handleLogout}>
               Déconnexion
