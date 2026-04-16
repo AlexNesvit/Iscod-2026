@@ -77,9 +77,9 @@ export default function DashboardPage() {
     const formatTemp = (offset) => (hasBaseTemp ? `${(baseTemp + offset).toFixed(1)}°C` : '--');
 
     return [
-      { id: 1, temp: formatTemp(0.6), wind: '32 km/h' },
-      { id: 2, temp: formatTemp(1.2), wind: '52 km/h' },
-      { id: 3, temp: formatTemp(1.6), wind: '11 km/h' },
+      { id: 1, temp: formatTemp(0.6) },
+      { id: 2, temp: formatTemp(1.2) },
+      { id: 3, temp: formatTemp(1.6) },
     ];
   }, [air?.temperature]);
 
@@ -419,7 +419,6 @@ export default function DashboardPage() {
             {forecast.map((item) => (
               <article key={item.id} className="forecast-item">
                 <p>{item.temp}</p>
-                <span>{item.wind}</span>
               </article>
             ))}
           </div>
