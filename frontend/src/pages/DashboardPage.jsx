@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import SearchForm from '../components/SearchForm';
 import MetricCard from '../components/MetricCard';
 import StatusMessage from '../components/StatusMessage';
+import FooterCopyright from '../components/FooterCopyright';
 import {
   addFavorite,
   deleteFavorite,
@@ -296,136 +297,140 @@ export default function DashboardPage() {
         backgroundImage: `linear-gradient(120deg, rgba(7, 22, 40, 0.78), rgba(9, 32, 63, 0.4)), url(${backgroundImage})`,
       }}
     >
-      <section className="right-time">
-        <p className="time-value">{loadingTime ? '...' : timeInfo.time}</p>
-        <p className="time-date">{loadingTime ? '--' : timeInfo.date}</p>
-        <p className="time-zone">{time?.timezone || 'Pas de fuseau horaire'}</p>
-      </section>
+      <div className="dashboard-content">
+        <section className="right-time">
+          <p className="time-value">{loadingTime ? '...' : timeInfo.time}</p>
+          <p className="time-date">{loadingTime ? '--' : timeInfo.date}</p>
+          <p className="time-zone">{time?.timezone || 'Pas de fuseau horaire'}</p>
+        </section>
 
-      <aside className="left-panel">
-        <header className="panel-header">
-          <h1>Weather Air & Eau</h1>
-          {isAuthenticated ? (
-            <button className="auth-button" type="button" onClick={handleLogout}>
-              Déconnexion
-            </button>
-          ) : (
-            <button className="auth-button" type="button" onClick={() => setShowLogin((prev) => !prev)}>
-              Connexion
-            </button>
-          )}
-        </header>
+        <aside className="left-panel">
+          <header className="panel-header">
+            <h1>Weather Air & Eau</h1>
+            {isAuthenticated ? (
+              <button className="auth-button" type="button" onClick={handleLogout}>
+                Déconnexion
+              </button>
+            ) : (
+              <button className="auth-button" type="button" onClick={() => setShowLogin((prev) => !prev)}>
+                Connexion
+              </button>
+            )}
+          </header>
 
-        {showLogin && !isAuthenticated ? (
-          <form className="login-form" onSubmit={handleLogin}>
-            <input
-              type="email"
-              value={loginEmail}
-              onChange={(event) => setLoginEmail(event.target.value)}
-              placeholder="Email"
-            />
-            <input
-              type="password"
-              value={loginPassword}
-              onChange={(event) => setLoginPassword(event.target.value)}
-              placeholder="Mot de passe"
-            />
-            <button type="submit">Se connecter</button>
-            <button className="register-link" type="button" onClick={handleCreateAccount}>
-              Pas inscrit ? Creer un compte
-            </button>
-          </form>
-        ) : null}
+          {showLogin && !isAuthenticated ? (
+            <form className="login-form" onSubmit={handleLogin}>
+              <input
+                type="email"
+                value={loginEmail}
+                onChange={(event) => setLoginEmail(event.target.value)}
+                placeholder="Email"
+              />
+              <input
+                type="password"
+                value={loginPassword}
+                onChange={(event) => setLoginPassword(event.target.value)}
+                placeholder="Mot de passe"
+              />
+              <button type="submit">Se connecter</button>
+              <button className="register-link" type="button" onClick={handleCreateAccount}>
+                Pas inscrit ? Creer un compte
+              </button>
+            </form>
+          ) : null}
 
-        {authMessage ? <StatusMessage message={authMessage} /> : null}
+          {authMessage ? <StatusMessage message={authMessage} /> : null}
 
-        <p className="city-label">Ville : {activeCity}</p>
+          <p className="city-label">Ville : {activeCity}</p>
 
-        <SearchForm
-          value={cityInput}
-          onChange={setCityInput}
-          onSubmit={handleSearch}
-          loadingAir={loadingAir}
-        />
-
-        <StatusMessage message={uiMessage} />
-
-        <section className="cards-grid">
-          <MetricCard
-            title="Temperature de l air"
-            value={loadingAir ? '...' : air?.temperature != null ? `${air.temperature}°C` : '--'}
-            subtitle={air?.condition || 'Pas de donnees'}
-            rightIconUrl={air?.conditionIcon}
-            rightIconAlt={air?.condition || 'Weather icon'}
-            largeRightIcon
+          <SearchForm
+            value={cityInput}
+            onChange={setCityInput}
+            onSubmit={handleSearch}
+            loadingAir={loadingAir}
           />
 
-          {water?.showWater ? (
+          <StatusMessage message={uiMessage} />
+
+          <section className="cards-grid">
             <MetricCard
-              title="Temperature de l eau"
-              value={loadingWater ? '...' : water?.waterTemperature != null ? `${water.waterTemperature}°C` : '--'}
-              subtitle={water?.waterState || ''}
+              title="Temperature de l air"
+              value={loadingAir ? '...' : air?.temperature != null ? `${air.temperature}°C` : '--'}
+              subtitle={air?.condition || 'Pas de donnees'}
+              rightIconUrl={air?.conditionIcon}
+              rightIconAlt={air?.condition || 'Weather icon'}
+              largeRightIcon
             />
+
+            {water?.showWater ? (
+              <MetricCard
+                title="Temperature de l eau"
+                value={loadingWater ? '...' : water?.waterTemperature != null ? `${water.waterTemperature}°C` : '--'}
+                subtitle={water?.waterState || ''}
+              />
+            ) : null}
+          </section>
+
+          {isAuthenticated ? (
+            <section className="favorites-actions">
+              <button className="favorite-button" type="button" onClick={handleAddFavorite}>
+                Ajouter aux favoris
+              </button>
+              <button className="favorite-button" type="button" onClick={handleLoadFavorites}>
+                {loadingFavorites ? 'Chargement...' : 'Mes favoris'}
+              </button>
+            </section>
           ) : null}
-        </section>
 
-        {isAuthenticated ? (
-          <section className="favorites-actions">
-            <button className="favorite-button" type="button" onClick={handleAddFavorite}>
-              Ajouter aux favoris
-            </button>
-            <button className="favorite-button" type="button" onClick={handleLoadFavorites}>
-              {loadingFavorites ? 'Chargement...' : 'Mes favoris'}
-            </button>
-          </section>
-        ) : null}
-
-        {showFavorites ? (
-          <section className="favorites-panel">
-            <p className="favorites-title">Mes favoris</p>
-            {favorites.length ? (
-              <ul>
-                {favorites.map((item) => (
-                  <li
-                    key={item.id}
-                    className="favorite-row"
-                    onClick={() => handleSearch(item.label || item.city_code)}
-                    style={{ cursor: 'pointer' }}
-                    title="Cliquer pour charger cette ville"
-                  >
-                    <span>{item.label || item.city_code}</span>
-                    <button
-                      type="button"
-                      className="delete-favorite"
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        handleDeleteFavorite(item.id);
-                      }}
+          {showFavorites ? (
+            <section className="favorites-panel">
+              <p className="favorites-title">Mes favoris</p>
+              {favorites.length ? (
+                <ul>
+                  {favorites.map((item) => (
+                    <li
+                      key={item.id}
+                      className="favorite-row"
+                      onClick={() => handleSearch(item.label || item.city_code)}
+                      style={{ cursor: 'pointer' }}
+                      title="Cliquer pour charger cette ville"
                     >
-                      ❌ Supprimer
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="favorites-empty">Aucun favori.</p>
-            )}
+                      <span>{item.label || item.city_code}</span>
+                      <button
+                        type="button"
+                        className="delete-favorite"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleDeleteFavorite(item.id);
+                        }}
+                      >
+                        ❌ Supprimer
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="favorites-empty">Aucun favori.</p>
+              )}
+            </section>
+          ) : null}
+
+          <section className="forecast-panel">
+            <p className="forecast-title">Previsions (mock)</p>
+            <div className="forecast-grid">
+              {forecast.map((item) => (
+                <article key={item.id} className="forecast-item">
+                  <p>{item.temp}</p>
+                </article>
+              ))}
+            </div>
           </section>
-        ) : null}
 
-        <section className="forecast-panel">
-          <p className="forecast-title">Previsions (mock)</p>
-          <div className="forecast-grid">
-            {forecast.map((item) => (
-              <article key={item.id} className="forecast-item">
-                <p>{item.temp}</p>
-              </article>
-            ))}
-          </div>
-        </section>
+          {isAuthenticated && user?.email ? <p className="auth-user">Connecte en tant que {user.email}</p> : null}
+        </aside>
+      </div>
 
-        {isAuthenticated && user?.email ? <p className="auth-user">Connecte en tant que {user.email}</p> : null}
-      </aside>
+      <FooterCopyright className="dashboard-footer" />
     </main>
   );
 }
