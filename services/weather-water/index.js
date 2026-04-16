@@ -69,6 +69,15 @@ function pickWaterTemperatureC(data) {
   return null;
 }
 
+function pickEstimatedWaterTemperatureC(data) {
+  const fromDayAvg = data?.forecast?.forecastday?.[0]?.day?.avgtemp_c;
+  if (Number.isFinite(fromDayAvg)) {
+    return fromDayAvg;
+  }
+
+  return null;
+}
+
 async function getCityImage(city) {
   if (!UNSPLASH_ACCESS_KEY) {
     return buildFallbackCityImage(city);
@@ -141,6 +150,23 @@ app.get('/water', async (req, res) => {
     const waterTemperature = pickWaterTemperatureC(data);
 
     if (!Number.isFinite(waterTemperature)) {
+      const estimatedWaterTemperature = pickEstimatedWaterTemperatureC(data);
+
+      if (Number.isFinite(estimatedWaterTemperature)) {
+        return res.status(200).json({
+          source: 'external',
+          degraded: true,
+          city: data?.location?.name || city,
+          waterTemperature: estimatedWaterTemperature,
+          unit: 'C',
+          waterState: 'Estimated (marine daily summary)',
+          showWater: true,
+          message: null,
+          cityImage,
+          fetchedAt: new Date().toISOString(),
+        });
+      }
+
       return res.status(200).json({
         source: 'external',
         degraded: true,

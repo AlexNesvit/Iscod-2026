@@ -347,6 +347,9 @@ export default function DashboardPage() {
             title="Temperature de l air"
             value={loadingAir ? '...' : air?.temperature != null ? `${air.temperature}°C` : '--'}
             subtitle={air?.condition || 'Pas de donnees'}
+            rightIconUrl={air?.conditionIcon}
+            rightIconAlt={air?.condition || 'Weather icon'}
+            largeRightIcon
           />
 
           {water?.showWater ? (

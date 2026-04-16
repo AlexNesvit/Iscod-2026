@@ -219,6 +219,42 @@ body {
   font-size: 0.95rem;
 }
 
+.metric-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.metric-right-icon {
+  width: 34px;
+  height: 34px;
+  object-fit: contain;
+}
+
+.metric-content-split {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.metric-left {
+  width: 50%;
+}
+
+.metric-right-large-icon {
+  width: 50%;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.metric-right-icon-large {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+}
+
 .metric-value {
   margin: 8px 0 4px;
   font-size: 1.9rem;
@@ -357,6 +393,11 @@ body {
 
   .favorites-actions {
     flex-wrap: wrap;
+  }
+
+  .metric-right-icon-large {
+    width: 72px;
+    height: 72px;
   }
 }
 
