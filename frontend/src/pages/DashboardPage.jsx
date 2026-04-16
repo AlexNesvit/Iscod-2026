@@ -49,11 +49,6 @@ export default function DashboardPage() {
   const [air, setAir] = useState(null);
   const [water, setWater] = useState(null);
   const [time, setTime] = useState(null);
-  const [forecast] = useState([
-    { id: 1, temp: '6°C', wind: '32 km/h' },
-    { id: 2, temp: '10°C', wind: '52 km/h' },
-    { id: 3, temp: '8°C', wind: '11 km/h' },
-  ]);
   const [loadingAir, setLoadingAir] = useState(false);
   const [loadingWater, setLoadingWater] = useState(false);
   const [loadingTime, setLoadingTime] = useState(false);
@@ -75,6 +70,19 @@ export default function DashboardPage() {
 
     return air?.cityImage || DEFAULT_BG;
   }, [hasUserSearched, air?.cityImage]);
+
+  const forecast = useMemo(() => {
+    const baseTemp = Number(air?.temperature);
+    const hasBaseTemp = Number.isFinite(baseTemp);
+    const formatTemp = (offset) => (hasBaseTemp ? `${(baseTemp + offset).toFixed(1)}°C` : '--');
+
+    return [
+      { id: 1, temp: formatTemp(0.6), wind: '32 km/h' },
+      { id: 2, temp: formatTemp(1.2), wind: '52 km/h' },
+      { id: 3, temp: formatTemp(1.6), wind: '11 km/h' },
+    ];
+  }, [air?.temperature]);
+
   const isAuthenticated = Boolean(token);
 
   async function loadCityData(city) {
