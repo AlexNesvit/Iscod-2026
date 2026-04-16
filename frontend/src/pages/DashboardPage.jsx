@@ -356,7 +356,7 @@ export default function DashboardPage() {
             <MetricCard
               title="Temperature de l eau"
               value={loadingWater ? '...' : water?.waterTemperature != null ? `${water.waterTemperature}°C` : '--'}
-              subtitle={water?.waterState || 'Pas de donnees'}
+              subtitle={water?.waterState || ''}
             />
           ) : null}
         </section>

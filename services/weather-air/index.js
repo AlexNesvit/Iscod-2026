@@ -100,7 +100,7 @@ app.get('/air', async (req, res) => {
         city,
         temperature: 23.4,
         unit: 'C',
-        condition: 'Clear',
+        condition: 'Ensoleille',
         conditionIcon: '//cdn.weatherapi.com/weather/64x64/day/113.png',
         message: 'Mock mode enabled',
         cityImage,
@@ -111,7 +111,7 @@ app.get('/air', async (req, res) => {
     const endpoint = WEATHER_AIR_API_URL.endsWith('/current.json')
       ? WEATHER_AIR_API_URL
       : `${WEATHER_AIR_API_URL.replace(/\/$/, '')}/current.json`;
-    const url = `${endpoint}?key=${encodeURIComponent(WEATHER_AIR_API_KEY)}&q=${encodeURIComponent(city)}&aqi=no`;
+    const url = `${endpoint}?key=${encodeURIComponent(WEATHER_AIR_API_KEY)}&q=${encodeURIComponent(city)}&aqi=no&lang=fr`;
     const response = await fetch(url);
 
     if (!response.ok) {
