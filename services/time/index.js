@@ -1,5 +1,11 @@
 const express = require('express');
 const cors = require('cors');
+const { getQueryCity, buildEndpointUrl, fetchJsonWithStatus } = require('../shared/http');
+const {
+  buildHealthPayload,
+  buildMissingCityPayload,
+  buildTimePayload,
+} = require('../shared/responses');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3005;
@@ -16,7 +22,7 @@ app.use(
 );
 
 function buildTimeDegradedResponse(city, message) {
-  return {
+  return buildTimePayload({
     source: 'fallback',
     degraded: true,
     city,
@@ -24,63 +30,63 @@ function buildTimeDegradedResponse(city, message) {
     localTime: null,
     localtimeEpoch: null,
     message,
-    fetchedAt: new Date().toISOString(),
-  };
+  });
 }
 
 app.get('/health', (req, res) => {
-  res.json({
-    service: SERVICE_NAME,
-    status: 'ok',
-    port: PORT,
-  });
+  res.json(
+    buildHealthPayload({
+      service: SERVICE_NAME,
+      port: PORT,
+      status: 'ok',
+    })
+  );
 });
 
 app.get('/time', async (req, res) => {
-  const city = typeof req.query.city === 'string' ? req.query.city.trim() : '';
+  const city = getQueryCity(req.query);
 
   if (!city) {
-    return res.status(400).json({ error: 'city query param is required' });
+    return res.status(400).json(buildMissingCityPayload());
   }
 
   try {
     if (TIME_USE_MOCK || !TIME_API_KEY) {
-      return res.json({
-        source: 'mock',
-        degraded: false,
-        city,
-        timezone: 'Europe/Paris',
-        localTime: new Date().toISOString(),
-        localtimeEpoch: Math.floor(Date.now() / 1000),
-        message: 'Mock mode enabled',
-        fetchedAt: new Date().toISOString(),
-      });
+      return res.json(
+        buildTimePayload({
+          source: 'mock',
+          degraded: false,
+          city,
+          timezone: 'Europe/Paris',
+          localTime: new Date().toISOString(),
+          localtimeEpoch: Math.floor(Date.now() / 1000),
+          message: 'Mock mode enabled',
+        })
+      );
     }
 
-    const endpoint = TIME_API_URL.endsWith('/timezone.json')
-      ? TIME_API_URL
-      : `${TIME_API_URL.replace(/\/$/, '')}/timezone.json`;
+    const endpoint = buildEndpointUrl(TIME_API_URL, 'timezone.json');
     const url = `${endpoint}?key=${encodeURIComponent(TIME_API_KEY)}&q=${encodeURIComponent(city)}`;
-    const response = await fetch(url);
+    const response = await fetchJsonWithStatus(url);
 
     if (!response.ok) {
-      const payload = await response.text();
-      console.error(`[time] timezone API error city=${city} status=${response.status} body=${payload}`);
+      console.error(`[time] timezone API error city=${city} status=${response.status} body=${response.errorBody}`);
       console.error('API failed, fallback used');
       return res.json(buildTimeDegradedResponse(city, 'Time API down: timezone temporarily unavailable'));
     }
 
-    const data = await response.json();
-    return res.json({
-      source: 'external',
-      degraded: false,
-      city: data?.location?.name || city,
-      timezone: data?.location?.tz_id || null,
-      localTime: data?.location?.localtime || null,
-      localtimeEpoch: data?.location?.localtime_epoch || null,
-      message: null,
-      fetchedAt: new Date().toISOString(),
-    });
+    const data = response.data;
+    return res.json(
+      buildTimePayload({
+        source: 'external',
+        degraded: false,
+        city: data?.location?.name || city,
+        timezone: data?.location?.tz_id || null,
+        localTime: data?.location?.localtime || null,
+        localtimeEpoch: data?.location?.localtime_epoch || null,
+        message: null,
+      })
+    );
   } catch (error) {
     console.error(`[time] /time failed city=${city}:`, error.message);
     console.error('API failed, fallback used');

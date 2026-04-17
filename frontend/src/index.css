@@ -110,7 +110,17 @@ body {
   gap: 10px;
 }
 
-.favorite-row:hover span {
+.favorite-city-button {
+  border: 0;
+  background: transparent;
+  color: #ffffff;
+  cursor: pointer;
+  text-decoration: none;
+  padding: 0;
+  font: inherit;
+}
+
+.favorite-city-button:hover {
   text-decoration: underline;
 }
 

@@ -1,12 +1,22 @@
 const express = require('express');
 const cors = require('cors');
+const {
+  getQueryCity,
+  buildEndpointUrl,
+  fetchJsonWithStatus,
+  createCityImageFetcher,
+} = require('../shared/http');
+const {
+  buildHealthPayload,
+  buildMissingCityPayload,
+  buildWaterPayload,
+} = require('../shared/responses');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3004;
 const SERVICE_NAME = 'weather-water';
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
-const WEATHER_WATER_API_URL =
-  process.env.WEATHER_WATER_API_URL || 'http://api.weatherapi.com/v1';
+const WEATHER_WATER_API_URL = process.env.WEATHER_WATER_API_URL || 'http://api.weatherapi.com/v1';
 const WEATHER_WATER_API_KEY = process.env.WEATHER_WATER_API_KEY || '';
 const WEATHER_WATER_USE_MOCK = String(process.env.WEATHER_WATER_USE_MOCK || 'true') === 'true';
 const UNSPLASH_API_URL = process.env.UNSPLASH_API_URL || 'https://api.unsplash.com/photos/random';
@@ -18,20 +28,19 @@ app.use(
   })
 );
 
-app.get('/health', (req, res) => {
-  res.json({
-    service: SERVICE_NAME,
-    status: 'ok',
-    port: PORT,
-  });
-});
-
 function buildFallbackCityImage(city) {
   return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)},water`;
 }
 
+const getCityImage = createCityImageFetcher({
+  unsplashApiUrl: UNSPLASH_API_URL,
+  unsplashAccessKey: UNSPLASH_ACCESS_KEY,
+  buildFallbackUrl: buildFallbackCityImage,
+  buildQuery: (city) => `${city} water`,
+});
+
 async function buildWaterDegradedResponse(city, message) {
-  return {
+  return buildWaterPayload({
     source: 'fallback',
     degraded: true,
     city,
@@ -41,8 +50,7 @@ async function buildWaterDegradedResponse(city, message) {
     showWater: false,
     message,
     cityImage: await getCityImage(city),
-    fetchedAt: new Date().toISOString(),
-  };
+  });
 }
 
 function pickWaterTemperatureC(data) {
@@ -78,66 +86,49 @@ function pickEstimatedWaterTemperatureC(data) {
   return null;
 }
 
-async function getCityImage(city) {
-  if (!UNSPLASH_ACCESS_KEY) {
-    return buildFallbackCityImage(city);
-  }
-
-  try {
-    const url = `${UNSPLASH_API_URL}?query=${encodeURIComponent(city)}%20water&orientation=landscape`;
-    const response = await fetch(url, {
-      headers: {
-        Authorization: `Client-ID ${UNSPLASH_ACCESS_KEY}`,
-      },
-    });
-
-    if (!response.ok) {
-      return buildFallbackCityImage(city);
-    }
-
-    const data = await response.json();
-    return data?.urls?.regular || buildFallbackCityImage(city);
-  } catch (error) {
-    return buildFallbackCityImage(city);
-  }
-}
+app.get('/health', (req, res) => {
+  res.json(
+    buildHealthPayload({
+      service: SERVICE_NAME,
+      port: PORT,
+      status: 'ok',
+    })
+  );
+});
 
 app.get('/water', async (req, res) => {
-  const city = typeof req.query.city === 'string' ? req.query.city.trim() : '';
+  const city = getQueryCity(req.query);
 
   if (!city) {
-    return res.status(400).json({ error: 'city query param is required' });
+    return res.status(400).json(buildMissingCityPayload());
   }
 
   try {
     if (WEATHER_WATER_USE_MOCK || !WEATHER_WATER_API_KEY) {
       console.log(`[weather-water] mock response for city=${city}`);
 
-      const cityImage = await getCityImage(city);
-      return res.json({
-        source: 'mock',
-        degraded: false,
-        city,
-        waterTemperature: 18.2,
-        unit: 'C',
-        waterState: 'Swimmable',
-        showWater: true,
-        message: 'Mock mode enabled',
-        cityImage,
-        fetchedAt: new Date().toISOString(),
-      });
+      return res.json(
+        buildWaterPayload({
+          source: 'mock',
+          degraded: false,
+          city,
+          waterTemperature: 18.2,
+          unit: 'C',
+          waterState: 'Swimmable',
+          showWater: true,
+          message: 'Mock mode enabled',
+          cityImage: await getCityImage(city),
+        })
+      );
     }
 
-    const endpoint = WEATHER_WATER_API_URL.endsWith('/marine.json')
-      ? WEATHER_WATER_API_URL
-      : `${WEATHER_WATER_API_URL.replace(/\/$/, '')}/marine.json`;
+    const endpoint = buildEndpointUrl(WEATHER_WATER_API_URL, 'marine.json');
     const url = `${endpoint}?key=${encodeURIComponent(WEATHER_WATER_API_KEY)}&q=${encodeURIComponent(city)}&days=1`;
-    const response = await fetch(url);
+    const response = await fetchJsonWithStatus(url);
 
     if (!response.ok) {
-      const payload = await response.text();
       console.error(
-        `[weather-water] external API error city=${city} status=${response.status} body=${payload}`
+        `[weather-water] external API error city=${city} status=${response.status} body=${response.errorBody}`
       );
       console.error('API failed, fallback used');
       return res.json(
@@ -145,54 +136,57 @@ app.get('/water', async (req, res) => {
       );
     }
 
-    const data = await response.json();
-    const cityImage = await getCityImage(city);
+    const data = response.data;
     const waterTemperature = pickWaterTemperatureC(data);
+    const cityImage = await getCityImage(city);
 
     if (!Number.isFinite(waterTemperature)) {
       const estimatedWaterTemperature = pickEstimatedWaterTemperatureC(data);
 
       if (Number.isFinite(estimatedWaterTemperature)) {
-        return res.status(200).json({
+        return res.status(200).json(
+          buildWaterPayload({
+            source: 'external',
+            degraded: true,
+            city: data?.location?.name || city,
+            waterTemperature: estimatedWaterTemperature,
+            unit: 'C',
+            waterState: null,
+            showWater: true,
+            message: null,
+            cityImage,
+          })
+        );
+      }
+
+      return res.status(200).json(
+        buildWaterPayload({
           source: 'external',
           degraded: true,
           city: data?.location?.name || city,
-          waterTemperature: estimatedWaterTemperature,
+          waterTemperature: null,
           unit: 'C',
-          waterState: null,
-          showWater: true,
-          message: null,
+          waterState: 'No nearby sea/lake data',
+          showWater: false,
+          message: 'Pas de donnees eau pour cette ville',
           cityImage,
-          fetchedAt: new Date().toISOString(),
-        });
-      }
-
-      return res.status(200).json({
-        source: 'external',
-        degraded: true,
-        city: data?.location?.name || city,
-        waterTemperature: null,
-        unit: 'C',
-        waterState: 'No nearby sea/lake data',
-        showWater: false,
-        message: 'Pas de donnees eau pour cette ville',
-        cityImage,
-        fetchedAt: new Date().toISOString(),
-      });
+        })
+      );
     }
 
-    return res.json({
-      source: 'external',
-      degraded: false,
-      city: data?.location?.name || city,
-      waterTemperature,
-      unit: 'C',
-      waterState: 'Temperature marine',
-      showWater: true,
-      message: null,
-      cityImage,
-      fetchedAt: new Date().toISOString(),
-    });
+    return res.json(
+      buildWaterPayload({
+        source: 'external',
+        degraded: false,
+        city: data?.location?.name || city,
+        waterTemperature,
+        unit: 'C',
+        waterState: 'Temperature marine',
+        showWater: true,
+        message: null,
+        cityImage,
+      })
+    );
   } catch (error) {
     console.error(`[weather-water] /water failed city=${city}:`, error.message);
     console.error('API failed, fallback used');

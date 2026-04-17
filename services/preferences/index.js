@@ -1,7 +1,7 @@
 const express = require('express');
 const mysql = require('mysql2/promise');
 const cors = require('cors');
-const verifyToken = require('./middleware/verifyToken');
+const verifyToken = require('../shared/middleware/verifyToken');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3002;

@@ -67,102 +67,109 @@ function buildMockTime(city) {
   };
 }
 
-export async function getAir(city) {
-  if (FRONTEND_MOCK_MODE) {
-    return buildMockAir(city);
+function requestApi({ base, path, method = 'GET', token, body, mockBuilder }) {
+  if (FRONTEND_MOCK_MODE && typeof mockBuilder === 'function') {
+    return Promise.resolve(mockBuilder());
   }
 
-  return fetchJson(`${AIR_API_BASE}/air?city=${encodeURIComponent(city)}`);
-}
+  const headers = {};
 
-export async function getWater(city) {
-  if (FRONTEND_MOCK_MODE) {
-    return buildMockWater(city);
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
   }
 
-  return fetchJson(`${WATER_API_BASE}/water?city=${encodeURIComponent(city)}`);
-}
-
-export async function getTime(city) {
-  if (FRONTEND_MOCK_MODE) {
-    return buildMockTime(city);
+  if (body !== undefined) {
+    headers['Content-Type'] = 'application/json';
   }
 
-  return fetchJson(`${TIME_API_BASE}/time?city=${encodeURIComponent(city)}`);
-}
-
-export async function getFavorites(token) {
-  return fetchJson(`${PREFERENCES_API_BASE}/favorites`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+  return fetchJson(`${base}${path}`, {
+    method,
+    headers,
+    body: body !== undefined ? JSON.stringify(body) : undefined,
   });
 }
 
-export async function login(email, password) {
-  if (FRONTEND_MOCK_MODE) {
-    return {
+export function getAir(city) {
+  return requestApi({
+    base: AIR_API_BASE,
+    path: `/air?city=${encodeURIComponent(city)}`,
+    mockBuilder: () => buildMockAir(city),
+  });
+}
+
+export function getWater(city) {
+  return requestApi({
+    base: WATER_API_BASE,
+    path: `/water?city=${encodeURIComponent(city)}`,
+    mockBuilder: () => buildMockWater(city),
+  });
+}
+
+export function getTime(city) {
+  return requestApi({
+    base: TIME_API_BASE,
+    path: `/time?city=${encodeURIComponent(city)}`,
+    mockBuilder: () => buildMockTime(city),
+  });
+}
+
+export function getFavorites(token) {
+  return requestApi({
+    base: PREFERENCES_API_BASE,
+    path: '/favorites',
+    token,
+  });
+}
+
+export function login(email, password) {
+  return requestApi({
+    base: AUTH_API_BASE,
+    path: '/login',
+    method: 'POST',
+    body: { email, password },
+    mockBuilder: () => ({
       token: 'mock-token',
       user: { id: 'mock-user-id', email, role: 'user' },
-    };
-  }
-
-  return fetchJson(`${AUTH_API_BASE}/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
+    }),
   });
 }
 
-export async function register(email, password) {
-  if (FRONTEND_MOCK_MODE) {
-    return {
+export function register(email, password) {
+  return requestApi({
+    base: AUTH_API_BASE,
+    path: '/register',
+    method: 'POST',
+    body: { email, password },
+    mockBuilder: () => ({
       message: 'Mock register success',
       user: { id: 'mock-user-id', email, role: 'user' },
-    };
-  }
-
-  return fetchJson(`${AUTH_API_BASE}/register`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ email, password }),
+    }),
   });
 }
 
-export async function addFavorite(token, city) {
-  if (FRONTEND_MOCK_MODE) {
-    return {
+export function addFavorite(token, city) {
+  return requestApi({
+    base: PREFERENCES_API_BASE,
+    path: '/favorites',
+    method: 'POST',
+    token,
+    body: { city },
+    mockBuilder: () => ({
       id: Date.now(),
       user_id: 'mock-user-id',
       city_code: city,
       label: city,
       created_at: new Date().toISOString(),
-    };
-  }
-
-  return fetchJson(`${PREFERENCES_API_BASE}/favorites`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ city }),
+    }),
   });
 }
 
-export async function deleteFavorite(token, favoriteId) {
-  if (FRONTEND_MOCK_MODE) {
-    return { message: 'Favori supprime (mock)' };
-  }
-
-  return fetchJson(`${PREFERENCES_API_BASE}/favorites/${favoriteId}`, {
+export function deleteFavorite(token, favoriteId) {
+  return requestApi({
+    base: PREFERENCES_API_BASE,
+    path: `/favorites/${favoriteId}`,
     method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
+    token,
+    mockBuilder: () => ({ message: 'Favori supprime (mock)' }),
   });
 }

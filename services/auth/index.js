@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const User = require('./models/User');
-const verifyToken = require('./middleware/verifyToken');
+const verifyToken = require('../shared/middleware/verifyToken');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
