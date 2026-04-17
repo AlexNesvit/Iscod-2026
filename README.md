@@ -15,17 +15,17 @@ L’objectif est de combiner **microservices Node.js**, un **frontend React**, e
 - **Frontend :** React
 - **Backend :** Node.js (architecture microservices)
 - **Bases de données :**
-  - MySQL → Logique métier (favoris, alertes)
-  - MongoDB → uthentification (utilisateurs, rôles)
-  - APIs externes :** données de température de l’air et de l’eau (consultation en temps réel, sans stockage).
-- **Sécurité BDD :** utilisateurs dédiés avec privilèges limités (DML    uniquement, sans DDL ni GRANT ALL)
+  - MySQL → logique métier (favoris, alertes)
+  - MongoDB → authentification (utilisateurs, rôles)
+- **APIs externes :** données de température de l’air et de l’eau (consultation en temps réel, sans stockage).
+- **Sécurité BDD :** utilisateurs dédiés avec privilèges limités (DML uniquement, sans DDL ni GRANT ALL)
 - **Conteneurisation :** Docker + Docker Compose
 - **Documentation API :** Swagger / OpenAPI
 - **Gestion de version :** GitHub (dépôt privé)
 
 ---
 
-## 📂 Structure du dépôt (prévisionnelle)
+## 📂 Structure du dépôt
 ```
 root/
  ├── frontend/              # Application React
@@ -35,7 +35,7 @@ root/
  │    ├── weather-air/     # API Air externe → (consultation sans stockage)
  │    └── weather-water/   # API Eau externe → (consultation sans stockage)
  ├── docs/
- │    ├── cahier_des_charges.md
+ │    ├── Cahier_des_charges.md
  │    └── architecture-diagram.png (optionnel)
  ├── docker-compose.yml
  └── README.md
@@ -84,67 +84,64 @@ Le projet utilise les variables `.env` directement dans `docker-compose.yml`.
 ---
 
 ## 📖 Documentation
-- **Cahier des Charges :** voir [docs/cahier_des_charges.md](docs/cahier_des_charges.md)
+- **Cahier des Charges :** voir [docs/Cahier_des_charges.md](docs/Cahier_des_charges.md)
 - **Vision produit / Cadrage:** voir [docs/vision_produit.md](docs/vision_produit.md)
-- **User stories / Backlog :** voir [docs/ser_stories.md](docs/user_stories.md)
+- **User stories / Backlog :** voir [docs/user_stories.md](docs/user_stories.md)
 - **Notes de projet / journal de bord (interne) :** voir [docs/journal_projet.md](docs/journal_projet.md)
 - **Swagger API Docs :** (à définir)
 
-## 🛠️ Roadmap de développement (notes personnelles)
+## 🛠️ Roadmap de développement (synthèse)
 
-Cette section constitue un plan de travail évolutif, destiné au suivi personnel de l’avancement du projet.
-Elle est susceptible d’évoluer, d’être modifiée ou supprimée au fil du développement.
+Cette section résume l’état réel du projet au moment de la soutenance.
 
 ### Étape 1 – Cadrage & documentation
-	•	Création du cahier des charges - ✅
-	•	Vision produit / cadrage projet - ✅
-	•	User stories / backlog produit - ✅
-	•	Mise à jour continue de la documentation - en cours
+- Création du cahier des charges
+- Vision produit / cadrage projet
+- User stories / backlog produit
+- Mise à jour continue de la documentation
 
 ### Étape 2 – Conception
-	•	Wireframes Figma (parcours desktop, texte réel) - en cours
-	•	Modélisation UML
-	•	Modélisation BDD (MERISE)
+- Wireframes Figma (parcours desktop, texte réel)
+- Modélisation UML
+- Modélisation BDD (MERISE)
 
 ### Étape 3 – Maquettes UI
-	•	Maquette couleur fidèle (desktop)
-	•	Maquette couleur fidèle (mobile)
+- Maquette couleur fidèle (desktop)
+- Maquette couleur fidèle (mobile)
 
-### Étape 4 – Initialisation technique  ✅ 
-	•	Installation Node.js
-	•	Initialisation du projet (npm) ✅ «Local Express skeleton OK»
-	•	Structure des microservices
-	•	Configuration Docker / Docker Compose
-  •	Workflow Git : main (stable) / develop (development)
+### Étape 4 – Initialisation technique
+- Installation Node.js
+- Initialisation du projet (npm)
+- Structure des microservices
+- Configuration Docker / Docker Compose
+- Workflow Git : `main` (stable) / `develop` (development)
 
-### Étape 5 – Intégration statique
-	•	Intégration HTML / CSS
-	•	Méthodologie BEM
-	•	SASS
-
-### Étape 5 – Initialisation technique
-	•	Installation Node.js
-	•	Initialisation du projet (npm)
-	•	Structure des microservices
-	•	Configuration Docker / Docker Compose
+### Étape 5 – Intégration UI
+- Construction du dashboard React
+- Mise en place des composants réutilisables
+- Connexion API frontend vers microservices
+- Ajustements responsive et UX
 
 ### Étape 6 – Backend (microservices)
-	•	Authentification (MongoDB)
-	•	Gestion des préférences (MySQL)
-	•	Service météo air (API externe)
-	•	Service météo eau (API externe)
-	•	Sécurisation des accès BDD
+- Authentification (MongoDB)
+- Gestion des préférences (MySQL)
+- Service météo air (API externe)
+- Service météo eau (API externe)
+- Service time (API externe)
+- Sécurisation des accès BDD
 
 ### Étape 7 – Frontend React
-	•	Découpage des composants
-	•	Templates et vues
-	•	Connexion aux APIs backend
+- Découpage des composants
+- Templates et vues
+- Connexion aux APIs backend
+- Responsive desktop/tablette/mobile
+- Footer global + amélioration UX favoris
 
 ### Étape 8 – Documentation & finalisation
-	•	Documentation Swagger / OpenAPI
-	•	Tests fonctionnels
-	•	Ajustements finaux
-	•	Préparation à la soutenance
+- Documentation Swagger / OpenAPI
+- Tests fonctionnels
+- Ajustements finaux
+- Préparation à la soutenance
 
 ---
 
@@ -239,7 +236,7 @@ Le bloc météo est implémenté avec appels API externes en temps réel, sans s
 Endpoints :
 - `GET /air?city=<ville>` (service `weather-air`)
 - `GET /water?city=<ville>` (service `weather-water`)
-- `GET /time?city=<ville>` (service `weather-air`)
+- `GET /time?city=<ville>` (service `time`)
 
 Providers utilisés :
 - `weather-air` : WeatherAPI `current.json`
@@ -301,7 +298,7 @@ npm install
 npm run dev
 ```
 
-Le serveur Vite démarre sur `http://localhost:3000`.
+Le serveur Vite démarre sur `http://localhost:3006`.
 
 ### Appels API frontend
 
@@ -352,14 +349,14 @@ Variables dans `frontend/.env.example` :
 
 ### Docker (préparation future)
 
-Exemple d’intégration future dans `docker-compose.yml` (port 3000) :
+Exemple d’intégration future dans `docker-compose.yml` (port 3006) :
 
 ```yaml
 frontend:
   build: ./frontend
-  command: npm run dev -- --host 0.0.0.0 --port 3000
+  command: npm run dev -- --host 0.0.0.0 --port 3006
   ports:
-    - "3000:3000"
+    - "3006:3006"
   depends_on:
     - auth
     - preferences
@@ -370,7 +367,7 @@ frontend:
 
 ---
 
-## ✅ Bloc 8 — Tests fonctionnels minimaux (implémenté)
+## Bloc 8 — Tests fonctionnels minimaux (implémenté)
 
 Une base de tests simple et lisible a été ajoutée avec `node:test` + `supertest`, sans modifier l’architecture microservices.
 
@@ -404,22 +401,22 @@ Dans le cadre de ce projet, une réflexion de conception a été menée afin de 
 ### UML (modélisation)
 
 Une modélisation simplifiée a été réalisée pour représenter les interactions principales du système :
-- Use case :
-- consulter la météo (air, eau, heure)
-- se connecter / s’inscrire
-- gérer ses favoris
-- ajouter / supprimer un favori
-- Architecture globale :
-- séparation en microservices (auth, preferences, weather-air, weather-water, time)
-- communication via HTTP (REST)
-- frontend React consommant les services backend
+- **Use case :**
+  - consulter la météo (air, eau, heure),
+  - se connecter / s’inscrire,
+  - gérer ses favoris,
+  - ajouter / supprimer un favori.
+- **Architecture globale :**
+  - séparation en microservices (auth, preferences, weather-air, weather-water, time),
+  - communication via HTTP (REST),
+  - frontend React consommant les services backend.
 
 ### Modélisation des données
-- MongoDB (auth) :
-- stockage des utilisateurs (email, passwordHash, role)
-- MySQL (preferences) :
-- stockage des favoris (city, user_id)
-- stockage des alertes (city, threshold, user_id)
+- **MongoDB (auth) :**
+  - stockage des utilisateurs (`email`, `passwordHash`, `role`).
+- **MySQL (preferences) :**
+  - stockage des favoris (`city`, `user_id`),
+  - stockage des alertes (`city`, `threshold`, `user_id`).
 
 Ce choix illustre une approche polyglotte adaptée aux besoins métier.
 
@@ -433,21 +430,21 @@ Les principes suivants ont été appliqués :
 - variables sensibles externalisées via .env.
 
 ### Performance
-- architecture microservices permettant une montée en charge indépendante
-- appels API externes sans stockage intermédiaire (réduction de complexité)
+- architecture microservices permettant une montée en charge indépendante,
+- appels API externes sans stockage intermédiaire (réduction de complexité),
 - rendu frontend progressif :
-- /air en priorité
-- /water et /time en parallèle
+  - `/air` en priorité,
+  - `/water` et `/time` en parallèle.
 
 ### Disponibilité
 - mise en place d’un mode dégradé (fallback) :
-- aucune erreur bloquante côté frontend
-- retour d’objets fallback (degraded: true)
-- affichage conditionnel des blocs (ex : eau masquée si indisponible)
+  - aucune erreur bloquante côté frontend,
+  - retour d’objets fallback (`degraded: true`),
+  - affichage conditionnel des blocs (ex : eau masquée si indisponible).
 - conteneurisation Docker :
-- environnement reproductible
-- services isolés
-- démarrage global via docker compose
+  - environnement reproductible,
+  - services isolés,
+  - démarrage global via `docker compose`.
 
 ### Complément de conception
 

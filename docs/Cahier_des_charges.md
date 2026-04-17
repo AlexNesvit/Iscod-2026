@@ -1,106 +1,107 @@
 # Cahier des Charges — Application Température (Air & Eau)
 
-## 1. Contexte et Objectifs
+## 1. Contexte et objectifs
 
-L’objectif du projet est de développer une application web permettant d’afficher les températures de l’air et de l’eau par ville, avec la possibilité pour l’utilisateur de s’authentifier, de gérer ses villes favorites et de configurer des alertes. L’application intégrera des APIs externes (température de l’air et température de l’eau) et des APIs internes (authentification, gestion des favoris, alertes).
+L’objectif du projet est de développer une application web permettant d’afficher la température de l’air, la température de l’eau (si disponible) et l’heure locale d’une ville, avec une architecture microservices claire et démontrable.
 
-**Public cible :** nageurs, surfeurs, coachs sportifs, touristes.
+Le projet doit rester stable en cas d’indisponibilité partielle des APIs externes (mode dégradé), tout en conservant une expérience utilisateur fluide.
 
-## 2. Périmètre Fonctionnel (MVP)
+## 2. Périmètre fonctionnel (MVP)
 
-* **Frontend :** Application React.
-* **Backend :** Architecture microservices en Node.js.
-* **Bases de données :**
+Fonctionnalités incluses :
 
-  * **MySQL :** pour les préférences utilisateurs, favoris et alertes.
-  * **MongoDB :** pour l’authentification (utilisateurs, rôles, tokens).
-* **APIs externes :**
+- recherche d’une ville manuelle ;
+- chargement météo air, eau et heure sans rechargement de page ;
+- affichage conditionnel du bloc eau (`showWater`) ;
+- authentification JWT (register/login/me) ;
+- gestion des favoris pour utilisateur authentifié (ajout, liste, suppression) ;
+- mode mock et fallback pour la démonstration ;
+- interface responsive (desktop, tablette, mobile).
 
-  * API n°1 : température de l’air par ville.
-  * API n°2 : température de l’eau (si la ville dispose d’un plan d’eau/océan/mer/rivière).
-* **API interne :**
+Fonctionnalités hors MVP (ou partiellement implémentées côté API uniquement) :
 
-  * Authentification et inscription utilisateur (JWT).
-  * Gestion des villes favorites (ajout/suppression).
-  * Gestion des alertes personnalisées.
+- gestion complète des alertes côté UI ;
+- notifications push/SMS ;
+- stockage d’historique météo.
 
-## 3. Architecture
+## 3. Architecture cible
 
-* **Frontend (React)** commun, communiquant avec un **API Gateway**.
-* **Microservices Node.js :**
+### 3.1 Frontend
 
-  1. **Auth Service (MongoDB)** : inscription, login, profil utilisateur.
-  2. **Preferences Service (MySQL)** : favoris, alertes.
-  3. **Weather Air Service (External API Services)** : intégration API air + pas de base de données, juste des requêtes directes vers les APIs externes.
-  4. **Weather Water Service (External API Services)** : intégration API eau + pas de base de données, juste des requêtes directes vers les APIs externes.
-* **API Gateway :** centralisation des appels vers les microservices.
-* **Docker :** chaque service conteneurisé.
+- React + Vite (port `3006` en dev).
+- Dashboard accessible sans authentification obligatoire.
+- Authentification optionnelle pour activer les favoris.
 
-## 4. Modèle de Données
+### 3.2 Backend microservices
 
-### MySQL (SQL)
+- `auth` (port `3001`) : register, login, me.
+- `preferences` (port `3002`) : favorites + alerts (JWT requis).
+- `weather-air` (port `3003`) : air + image ville + icône météo.
+- `weather-water` (port `3004`) : eau marine + estimation si champ absent.
+- `time` (port `3005`) : timezone + localtime.
 
-* **users**(id, email, passwordHash, createdAt)
-* **favorites**(id, user_id, cityCode, label, createdAt)
-* **alerts**(id, user_id, cityCode, type [air|water], threshold, direction [ABOVE|BELOW], createdAt)
+### 3.3 Bases de données
 
-### MongoDB (NoSQL)
+- MongoDB : utilisateurs/auth (`auth`).
+- MySQL : favoris/alertes (`preferences`).
 
-```json
-{
-  "email": "user@mail.com",
-  "passwordHash": "...",
-  "role": "user" | "admin",
-  "createdAt": "2025-09-26T10:00:00Z"
-}
-```
+Important : les données météo (air/eau/heure) ne sont pas stockées en base, elles sont consultées en temps réel via API externe.
 
-### Les APIs externes (Air & Eau) sont consultées en temps réel sans stockage des données dans la base.
+## 4. Modèle de données
 
-## 5. Parcours Utilisateur
+### 4.1 MongoDB (auth)
 
-* L’utilisateur crée un compte et se connecte.
-* Il ajoute plusieurs villes en favoris.
-* L’application affiche la température de l’air (toujours) et de l’eau (si disponible).
-* L’utilisateur peut définir des alertes (par ex. « notifier si eau < 18°C »).
-* Les données sont récupérées des APIs externes mais stockées dans MongoDB.
+Document utilisateur :
 
-## 6. Exigences Non Fonctionnelles
+- `email`
+- `passwordHash`
+- `role`
+- `createdAt`
 
-* **Performance :** temps de réponse API < 300ms (hors latence externe).
-* **Sécurité :** JWT, gestion des accès, CORS strict.
-* **Scalabilité :** architecture microservices, conteneurisation Docker.
-* **Qualité :** documentation des APIs (Swagger), tests unitaires de base.
+### 4.2 MySQL (preferences)
 
-## 7. Sécurité des Bases de Données
-- Chaque base de données (MySQL et MongoDB) disposera d’un **utilisateur dédié** :
-  - accès limité à **une seule base** ;
-  - privilèges restreints à **lecture/écriture (DML uniquement)** ;
-  - **aucun droit administrateur (pas de GRANT ALL)**.
-- Ce cloisonnement garantit la sécurité et réduit les risques en cas de compromission.
-- Les contraintes d’intégrité (clés étrangères, unicité) seront activées sur MySQL afin d’assurer la cohérence des données.
+Tables métier :
 
+- `favorites` (`id`, `user_id`, `city_code`, `label`, `created_at`)
+- `alerts` (`id`, `user_id`, `city_code`, `type`, `threshold`, `direction`, `created_at`)
 
+## 5. APIs externes et stratégie de données
 
-## 8. Fonctionnalités Futures (optionnelles)
+APIs WeatherAPI utilisées :
 
-En fonction du temps et des ressources disponibles, des fonctionnalités supplémentaires pourront être intégrées :
+- `current.json` (air),
+- `marine.json` (water),
+- `timezone.json` (time).
 
-* Lors de l’ouverture d’une ville, affichage de photos issues de Google (ex. photos connues, monuments, paysages).
-* Possibilité de cliquer sur une photo pour l’agrandir et découvrir des images représentatives de la ville.
+Logique eau :
 
-Ces éléments ne font pas partie du MVP initial mais pourront enrichir l’expérience utilisateur ultérieurement.
+- si `water_temp_c` existe : valeur réelle ;
+- sinon : estimation via `forecastday[0].day.avgtemp_c` ;
+- sinon : bloc eau masqué (`showWater=false`).
 
-## 9. Livrables
+## 6. Exigences non fonctionnelles
 
-* Code source (Frontend React, Backend Node.js microservices).
-* Schéma des bases de données.
-* Documentation API (Swagger / OpenAPI).
-* Cahier des charges (ce document, rédigé en format Markdown pour intégration facile dans un dépôt GitHub).
-* **Dépôt GitHub** (privé) contenant le code source et les documents associés.
-* **README.md** en Markdown, décrivant le projet, les technologies utilisées et les instructions de lancement (Docker Compose, installation, configuration).
-* Docker Compose pour lancer l’ensemble.
+- robustesse : pas de crash frontend si API externe indisponible ;
+- résilience : réponses fallback (`degraded: true`) ;
+- performance perçue : chargement progressif (`/air` puis `/water` + `/time` en parallèle) ;
+- sécurité : JWT, bcrypt, middleware `verifyToken`, CORS ;
+- reproductibilité : lancement backend via Docker Compose.
+
+## 7. Sécurité des accès
+
+- séparation MongoDB/MySQL par responsabilité métier ;
+- secrets externalisés via `.env` ;
+- routes sensibles protégées par token Bearer ;
+- isolation des données utilisateur via `user_id` issu du token.
+
+## 8. Livrables
+
+- code source frontend + backend microservices ;
+- Docker Compose backend ;
+- documentation projet (`README`, `journal_projet`, `vision_produit`, `user_stories`, ce cahier) ;
+- diagrammes UML Bloc 9 (`uml-bloc9-simple.svg`, `uml-bloc9-usecase.svg`) ;
+- tests fonctionnels minimaux des endpoints critiques.
 
 ---
 
-**Résumé :** Le projet démontre l’utilisation de deux types de bases de données (SQL et NoSQL), l’intégration d’APIs externes et la conception d’APIs internes. L’application offre une expérience utilisateur simple : authentification, gestion de favoris, visualisation des températures et alertes personnalisées, avec possibilité d’évolution future vers un affichage enrichi (photos des villes). L’ensemble sera versionné et documenté dans un dépôt GitHub avec README.md en Markdown.
+Résumé : le projet implémente une architecture microservices lisible, des APIs météo temps réel sans stockage, une auth JWT, un mode dégradé robuste, et un frontend démontrable pour l’examen.

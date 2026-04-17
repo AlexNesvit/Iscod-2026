@@ -1,96 +1,72 @@
-# Vision Produit – Application Température (Air & Eau)
+# Vision Produit — Application Température (Air & Eau)
 
-## 1. Contexte et objectif du projet
+## 1. Vision
 
-Ce projet s’inscrit dans le cadre d’un projet d’examen visant à concevoir et développer une application web complète, en appliquant une démarche professionnelle de gestion de projet et de conception logicielle.
+Créer une application météo simple et fiable qui permet de consulter rapidement l’air, l’eau et l’heure locale d’une ville, avec une UX claire et une architecture microservices professionnelle.
 
-L’objectif principal est de proposer une application permettant à un utilisateur de consulter, en temps réel, la température de l’air et de l’eau pour une ville donnée, à partir de données fournies par des APIs externes, sans stockage de ces données météorologiques.
+## 2. Objectif principal
 
-Le projet met l’accent sur :
-	•	une architecture microservices,
-	•	la séparation claire des responsabilités,
-	•	la sécurité des accès aux bases de données,
-	•	une approche centrée utilisateur,
-	•	et une démarche progressive de conception avant développement.
+Offrir un dashboard unique qui fonctionne même en cas d’erreurs externes :
 
-⸻
+- affichage air prioritaire ;
+- chargement eau + heure en parallèle ;
+- mode dégradé sans crash ;
+- accès météo possible sans login obligatoire.
 
-## 2. Vision du produit
+## 3. Valeur utilisateur
 
-L’application a pour vocation de fournir une information météo simple, lisible et contextualisée, à destination d’utilisateurs souhaitant consulter rapidement les conditions climatiques d’une ville, notamment dans un contexte de loisirs, de voyage ou d’activités en extérieur.
+- consultation immédiate de la météo d’une ville ;
+- visualisation enrichie (image de ville + icône météo) ;
+- personnalisation via favoris après connexion ;
+- continuité d’usage même si une API externe tombe.
 
-La température de l’eau constitue une fonctionnalité différenciante, affichée uniquement lorsque l’information est disponible (présence d’un point d’eau exploitable à proximité de la ville sélectionnée).
+## 4. Public cible
 
-L’application doit rester fonctionnelle même en cas d’indisponibilité partielle des services externes (mode dégradé).
+- utilisateurs grand public (voyage, loisirs, activités extérieures) ;
+- utilisateurs souhaitant sauvegarder des villes favorites après authentification.
 
-⸻
+## 5. Périmètre fonctionnel actuel
 
-## 3. Cibles utilisateurs
+Inclus :
 
-Les utilisateurs ciblés sont :
-	•	des utilisateurs non authentifiés souhaitant consulter rapidement des informations de température,
-	•	des utilisateurs authentifiés souhaitant personnaliser leur expérience via :
-	•	la gestion de villes favorites,
-	•	la définition d’alertes personnalisées.
+- recherche manuelle de ville ;
+- température de l’air (WeatherAPI `current.json`) ;
+- température de l’eau (WeatherAPI `marine.json`, avec estimation si nécessaire) ;
+- heure locale (WeatherAPI `timezone.json`) ;
+- authentification JWT (`register`, `login`, `me`) ;
+- favoris (`add`, `list`, `delete`) ;
+- mode mock frontend + mode fallback backend ;
+- interface responsive desktop/tablette/mobile.
 
-L’application ne vise pas un public technique, mais un usage grand public simple et intuitif.
+Hors périmètre UI actuel :
 
-⸻
+- écran complet de gestion d’alertes (API prête côté backend) ;
+- notifications push/SMS ;
+- historique météo.
 
-## 4. Périmètre fonctionnel
+## 6. Contraintes techniques
 
-Fonctionnalités incluses dans le périmètre :
-	•	géolocalisation approximative par IP,
-	•	recherche manuelle d’une ville,
-	•	consultation de la température de l’air,
-	•	consultation de la température de l’eau lorsque disponible,
-	•	affichage d’une image représentative de la ville,
-	•	authentification utilisateur,
-	•	gestion des villes favorites,
-	•	création et consultation d’alertes,
-	•	séparation des responsabilités par microservices.
+- frontend : React + Vite (port dev `3006`) ;
+- backend : Node.js/Express en microservices ;
+- stockage polyglotte :
+  - MongoDB pour `auth`,
+  - MySQL pour `preferences` ;
+- aucune persistance des données météo ;
+- conteneurisation backend via Docker Compose.
 
-Fonctionnalités exclues du périmètre :
-	•	stockage historique des données météorologiques,
-	•	prévisions long terme,
-	•	gestion avancée des notifications (SMS, push mobiles),
-	•	interface d’administration avancée.
+## 7. Principes produit
 
-⸻
+- lisibilité (code et UI démontrables à l’examen) ;
+- modularité (responsabilités séparées par service) ;
+- robustesse (fallback, degraded, try/catch) ;
+- sécurité (JWT, bcrypt, verifyToken, variables `.env`).
 
-## 5. Contraintes techniques
+## 8. Indicateurs de réussite
 
-Les contraintes techniques imposées au projet sont les suivantes :
-	•	architecture microservices basée sur Node.js,
-	•	frontend développé en React,
-	•	utilisation de deux systèmes de bases de données distincts :
-	•	MongoDB pour l’authentification et la gestion des utilisateurs,
-	•	MySQL pour la logique métier (favoris, alertes),
-	•	accès aux bases de données via des utilisateurs dédiés disposant uniquement de privilèges DML,
-	•	absence de droits DDL ou administratifs pour les services applicatifs,
-	•	données météorologiques récupérées via des APIs externes, sans stockage,
-	•	conteneurisation de chaque service via Docker et Docker Compose,
-	•	documentation des APIs via Swagger / OpenAPI.
+Le produit est considéré valide si :
 
-⸻
-
-## 6. Approche méthodologique
-
-Le projet adopte une approche centrée utilisateur (user-centric), reposant sur :
-	•	la formalisation des besoins sous forme de user stories,
-	•	la constitution d’un backlog produit,
-	•	une conception préalable incluant wireframes, modélisation UML et modélisation des bases de données,
-	•	une progression par étapes, de la conception vers l’implémentation.
-
-Cette approche vise à garantir la cohérence du produit, la maintenabilité du code et la lisibilité du projet dans un contexte pédagogique et professionnel.
-
-⸻
-
-## 7. Indicateurs de réussite
-
-Le projet sera considéré comme abouti si :
-	•	l’architecture microservices est fonctionnelle et cohérente,
-	•	les bases de données sont correctement sécurisées et isolées,
-	•	l’application démarre et fonctionne via Docker Compose,
-	•	les fonctionnalités principales sont accessibles et stables,
-	•	la documentation projet est claire, structurée et exploitable.
+- les 5 microservices répondent correctement (`/health`) ;
+- la recherche météo charge les données attendues sans reload ;
+- le dashboard reste utilisable en mode dégradé ;
+- l’authentification et les favoris fonctionnent ;
+- la documentation et les tests minimaux sont cohérents avec l’implémentation.

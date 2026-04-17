@@ -383,7 +383,7 @@ Ce bloc concrétise la fonctionnalité différenciante du projet : la consultati
 
 	•	`GET /air?city=<ville>` (`weather-air`)
 	•	`GET /water?city=<ville>` (`weather-water`)
-	•	`GET /time?city=<ville>` (`weather-air`)
+	•	`GET /time?city=<ville>` (`time`)
 
 ### Intégration des providers
 
@@ -527,7 +527,7 @@ En cas d’échec login, l’UI n’est pas bloquée : la consultation météo c
 ### Séparation frontend / backend
 
 La séparation est effective :
-	•	frontend indépendant sur son propre runtime Vite (port 3000),
+	•	frontend indépendant sur son propre runtime Vite (port 3006),
 	•	backends sur ports dédiés (3003/3004/3005/…),
 	•	CORS pris en compte côté services météo/time pour autoriser l’origine frontend.
 
@@ -654,3 +654,26 @@ Des schémas visuels minimaux ont été ajoutés pour la soutenance :
 
 - Architecture + use cases : ![UML bloc 9](uml-bloc9-simple.svg)
 - Use case only (slide) : ![UML use case bloc 9](uml-bloc9-usecase.svg)
+
+⸻
+
+## Mise à jour de cohérence documentaire (avril 2026)
+
+Une passe de cohérence a été réalisée sur l’ensemble des fichiers Markdown du projet pour aligner la documentation avec l’état réel du code :
+
+- `README.md` :
+  - suppression des marqueurs de statut visuels dans la roadmap,
+  - correction des liens docs,
+  - correction du port frontend (`3006`),
+  - correction du service `time` dans la section endpoints,
+  - homogénéisation du style des listes.
+- `Cahier_des_charges.md` :
+  - retrait des éléments non implémentés dans le MVP actuel (API Gateway, géolocalisation IP obligatoire),
+  - clarification du périmètre réellement livré (auth optionnelle, favoris, mode dégradé, mock).
+- `vision_produit.md` :
+  - recentrage sur la version effectivement démontrée à l’examen.
+- `user_stories.md` :
+  - mise à jour des user stories avec statut (`implémentée`, `partielle`).
+- UML Bloc 9 :
+  - conservation du format SVG,
+  - liens documentaires pointant sur les fichiers SVG valides.
