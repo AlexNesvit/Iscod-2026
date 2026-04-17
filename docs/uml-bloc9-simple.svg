@@ -1,11 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1200" height="720" viewBox="0 0 1200 720">
   <defs>
     <style>
-      .title { font: 700 28px Arial, sans-serif; fill: #0b1f3a; }
-      .label { font: 600 18px Arial, sans-serif; fill: #0b1f3a; }
-      .small { font: 500 15px Arial, sans-serif; fill: #0b1f3a; }
+      .title { font: 700 28px sans-serif; fill: #0b1f3a; }
+      .label { font: 600 18px sans-serif; fill: #0b1f3a; }
+      .small { font: 500 15px sans-serif; fill: #0b1f3a; }
       .box { fill: #eef5ff; stroke: #2d5ea8; stroke-width: 2; rx: 12; ry: 12; }
-      .line { stroke: #2d5ea8; stroke-width: 2.5; fill: none; marker-end: url(#arrow); }
+      .line { stroke: #2d5ea8; stroke-width: 2.4; fill: none; marker-end: url(#arrow); }
+      .pipe { stroke: #2d5ea8; stroke-width: 2.2; fill: none; }
     </style>
     <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto">
       <polygon points="0,0 10,5 0,10" fill="#2d5ea8" />
@@ -13,7 +14,7 @@
   </defs>
 
   <rect x="0" y="0" width="1200" height="720" fill="#f8fbff" />
-  <text x="40" y="52" class="title">Bloc 9 - UML ultra-simple (Architecture & Use Cases)</text>
+  <text x="40" y="52" class="title">Bloc 9 - UML ultra-simple (Architecture &amp; Use Cases)</text>
 
   <rect x="70" y="120" width="240" height="90" class="box" />
   <text x="102" y="170" class="label">Utilisateur</text>
@@ -37,24 +38,27 @@
   <rect x="890" y="470" width="240" height="75" class="box" />
   <text x="938" y="515" class="label">time :3005</text>
 
-  <rect x="160" y="470" width="280" height="80" class="box" />
-  <text x="200" y="518" class="label">MongoDB (auth_db)</text>
+  <rect x="160" y="520" width="280" height="80" class="box" />
+  <text x="200" y="568" class="label">MongoDB (auth_db)</text>
 
-  <rect x="500" y="470" width="280" height="80" class="box" />
-  <text x="555" y="518" class="label">MySQL (preferences_db)</text>
+  <rect x="500" y="520" width="280" height="80" class="box" />
+  <text x="555" y="568" class="label">MySQL (preferences_db)</text>
 
   <path d="M310 165 L380 165" class="line" />
 
-  <path d="M800 140 L890 128" class="line" />
-  <path d="M800 185 L890 220" class="line" />
-  <path d="M800 185 L890 318" class="line" />
-  <path d="M800 185 L890 413" class="line" />
-  <path d="M800 185 L890 508" class="line" />
+  <path d="M800 170 L850 170" class="pipe" />
+  <path d="M850 170 L850 508" class="pipe" />
 
-  <path d="M1010 165 L1010 460" class="line" />
-  <path d="M1010 260 L780 500" class="line" />
+  <path d="M850 127 L890 127" class="line" />
+  <path d="M850 222 L890 222" class="line" />
+  <path d="M850 317 L890 317" class="line" />
+  <path d="M850 412 L890 412" class="line" />
+  <path d="M850 508 L890 508" class="line" />
 
-  <text x="65" y="610" class="small">Use cases principaux : consulter meteo, se connecter, gerer favoris.</text>
-  <text x="65" y="638" class="small">Communication : HTTP REST entre frontend et microservices.</text>
-  <text x="65" y="666" class="small">Stockage : MongoDB pour auth, MySQL pour preferences/favoris/alertes.</text>
+  <path d="M1130 128 L1160 128 L1160 520 L300 520" class="line" />
+  <path d="M1130 222 L1140 222 L1140 520 L640 520" class="line" />
+
+  <text x="65" y="640" class="small">Use cases principaux : consulter meteo, se connecter, gerer favoris.</text>
+  <text x="65" y="668" class="small">Communication : HTTP REST entre frontend et microservices.</text>
+  <text x="65" y="696" class="small">Stockage : MongoDB pour auth, MySQL pour preferences/favoris/alertes.</text>
 </svg>
