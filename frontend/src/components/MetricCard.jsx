@@ -1,9 +1,11 @@
+// Normalise l'URL d'icone (ajoute https si l'URL commence par //).
 function normalizeIconUrl(iconUrl) {
   if (!iconUrl) return null;
   if (iconUrl.startsWith('//')) return `https:${iconUrl}`;
   return iconUrl;
 }
 
+// Carte visuelle reutilisable pour afficher une metrique meteo.
 export default function MetricCard({
   title,
   value,

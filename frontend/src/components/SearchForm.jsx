@@ -1,3 +1,4 @@
+// Formulaire de recherche de ville avec etat de chargement.
 export default function SearchForm({ value, onChange, onSubmit, loadingAir }) {
   return (
     <form className="search-form" onSubmit={onSubmit}>

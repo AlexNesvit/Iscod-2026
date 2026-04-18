@@ -1,3 +1,4 @@
+// Pied de page global avec credit auteur.
 export default function FooterCopyright({ className = '' }) {
   const classes = ['copyright-footer', className].filter(Boolean).join(' ');
 

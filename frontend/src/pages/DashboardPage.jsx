@@ -19,6 +19,7 @@ const DEFAULT_BG =
 const TOKEN_KEY = 'weather_dashboard_token';
 const USER_KEY = 'weather_dashboard_user';
 
+// Converte une date brute en heure + date lisibles pour l'interface.
 function formatLocalTime(value) {
   if (!value) return '--';
 
@@ -42,6 +43,7 @@ function formatLocalTime(value) {
   return { time: raw, date: '--' };
 }
 
+// Page principale: orchestre l'auth, la meteo, les favoris et le rendu UI.
 export default function DashboardPage() {
   const [token, setToken] = useState(null);
   const [user, setUser] = useState(null);
@@ -64,6 +66,7 @@ export default function DashboardPage() {
   const [hasUserSearched, setHasUserSearched] = useState(false);
   const timeInfo = formatLocalTime(time?.localTime);
 
+  // Choisit l'image de fond dynamique apres une recherche utilisateur.
   const backgroundImage = useMemo(() => {
     if (!hasUserSearched) {
       return DEFAULT_BG;
@@ -72,6 +75,7 @@ export default function DashboardPage() {
     return air?.cityImage || DEFAULT_BG;
   }, [hasUserSearched, air?.cityImage]);
 
+  // Construit une mini-prevision visuelle a partir de la temperature air.
   const forecast = useMemo(() => {
     const baseTemp = Number(air?.temperature);
     const hasBaseTemp = Number.isFinite(baseTemp);
@@ -86,6 +90,7 @@ export default function DashboardPage() {
 
   const isAuthenticated = Boolean(token);
 
+  // Charge les donnees d'une ville: air d'abord, puis eau + heure en parallele.
   async function loadCityData(city) {
     if (!city) {
       setUiMessage('La ville est obligatoire.');
@@ -140,6 +145,7 @@ export default function DashboardPage() {
     setLoadingTime(false);
   }
 
+  // Gere la soumission du formulaire de recherche (ville utilisateur).
   async function handleSearch(input) {
     const cityFromInput =
       typeof input === 'string' ? input.trim() : typeof cityInput === 'string' ? cityInput.trim() : '';
@@ -158,6 +164,7 @@ export default function DashboardPage() {
     await loadCityData(cityFromInput);
   }
 
+  // Initialise le dashboard avec la ville par defaut au premier rendu.
   useEffect(() => {
     const defaultCity = 'Paris';
     setCityInput(defaultCity);
@@ -166,6 +173,7 @@ export default function DashboardPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Tente la connexion; si compte absent, essaie une creation automatique.
   async function handleLogin(event) {
     event.preventDefault();
     setAuthMessage(null);
@@ -208,6 +216,7 @@ export default function DashboardPage() {
     }
   }
 
+  // Cree un compte puis connecte l'utilisateur dans la meme action.
   async function handleCreateAccount() {
     setAuthMessage(null);
 
@@ -230,6 +239,7 @@ export default function DashboardPage() {
     }
   }
 
+  // Ferme la session locale et nettoie les donnees stockees en local.
   function handleLogout() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -241,6 +251,7 @@ export default function DashboardPage() {
     setUiMessage('Deconnecte. Le dashboard meteo reste disponible.');
   }
 
+  // Ajoute la ville active dans les favoris de l'utilisateur connecte.
   async function handleAddFavorite() {
     if (!isAuthenticated) {
       return;
@@ -254,6 +265,7 @@ export default function DashboardPage() {
     }
   }
 
+  // Recupere les favoris depuis l'API et affiche le panneau dedie.
   async function handleLoadFavorites() {
     if (!isAuthenticated) {
       return;
@@ -276,6 +288,7 @@ export default function DashboardPage() {
     }
   }
 
+  // Supprime un favori et met a jour la liste cote interface.
   async function handleDeleteFavorite(favoriteId) {
     if (!isAuthenticated) {
       return;
