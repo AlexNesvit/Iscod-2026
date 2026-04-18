@@ -17,6 +17,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:3000';
 
 let mongoConnected = false;
 
+// Active CORS + parsing JSON pour toutes les routes du service.
 app.use(
   cors({
     origin: CORS_ORIGIN,
@@ -24,6 +25,7 @@ app.use(
 );
 app.use(express.json());
 
+// Etablit la connexion MongoDB au demarrage du service.
 async function connectMongo() {
   try {
     await mongoose.connect(MONGO_URI, {
@@ -41,6 +43,7 @@ if (process.env.NODE_ENV !== 'test') {
   connectMongo();
 }
 
+// Cree un nouvel utilisateur avec mot de passe hashe.
 app.post('/register', async (req, res) => {
   try {
     const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
@@ -80,6 +83,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Authentifie l'utilisateur et retourne un JWT.
 app.post('/login', async (req, res) => {
   try {
     const email = typeof req.body.email === 'string' ? req.body.email.trim().toLowerCase() : '';
@@ -122,6 +126,7 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Retourne le profil du user connecte (route protegee JWT).
 app.get('/me', verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.user.sub).select('_id email role createdAt');
@@ -140,6 +145,7 @@ app.get('/me', verifyToken, async (req, res) => {
   }
 });
 
+// Endpoint de sante pour supervision du service auth.
 app.get('/health', (req, res) => {
   const dbStatus = mongoose.connection.readyState === 1 ? 'connected' : 'disconnected';
   const status = dbStatus === 'connected' ? 'ok' : 'degraded';
@@ -155,6 +161,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Demarre le serveur HTTP quand le fichier est lance directement.
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`${SERVICE_NAME} service running on port ${PORT}`);

@@ -9,12 +9,14 @@ const TIME_API_URL = process.env.TIME_API_URL || 'http://api.weatherapi.com/v1';
 const TIME_API_KEY = process.env.TIME_API_KEY || '';
 const TIME_USE_MOCK = String(process.env.TIME_USE_MOCK || 'true') === 'true';
 
+// Active CORS pour les appels frontend.
 app.use(
   cors({
     origin: CORS_ORIGIN,
   })
 );
 
+// Construit une reponse heure degradee en mode fallback.
 function buildTimeDegradedResponse(city, message) {
   return {
     source: 'fallback',
@@ -28,6 +30,7 @@ function buildTimeDegradedResponse(city, message) {
   };
 }
 
+// Endpoint de sante pour supervision du service time.
 app.get('/health', (req, res) => {
   res.json({
     service: SERVICE_NAME,
@@ -36,6 +39,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Retourne fuseau/localTime (mock ou API externe), avec fallback.
 app.get('/time', async (req, res) => {
   const city = typeof req.query.city === 'string' ? req.query.city.trim() : '';
 
@@ -88,6 +92,7 @@ app.get('/time', async (req, res) => {
   }
 });
 
+// Demarre le serveur HTTP quand le fichier est lance directement.
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`${SERVICE_NAME} service running on port ${PORT}`);

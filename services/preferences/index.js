@@ -23,6 +23,7 @@ const pool = mysql.createPool({
 
 let mysqlConnected = false;
 
+// Active CORS + parsing JSON pour toutes les routes du service.
 app.use(
   cors({
     origin: CORS_ORIGIN,
@@ -30,6 +31,7 @@ app.use(
 );
 app.use(express.json());
 
+// Verifie la connexion MySQL au demarrage du service.
 async function checkMySqlConnection() {
   try {
     await pool.query('SELECT 1');
@@ -45,9 +47,11 @@ if (process.env.NODE_ENV !== 'test') {
   checkMySqlConnection();
 }
 
+// Protege toutes les routes favoris/alertes avec JWT.
 app.use('/favorites', verifyToken);
 app.use('/alerts', verifyToken);
 
+// Ajoute une ville aux favoris de l'utilisateur connecte.
 app.post('/favorites', async (req, res) => {
   const userId = req.user?.sub;
   const city = typeof req.body.city === 'string' ? req.body.city.trim() : '';
@@ -80,6 +84,7 @@ app.post('/favorites', async (req, res) => {
   }
 });
 
+// Liste les favoris de l'utilisateur connecte.
 app.get('/favorites', async (req, res) => {
   const userId = req.user?.sub;
 
@@ -98,6 +103,7 @@ app.get('/favorites', async (req, res) => {
   }
 });
 
+// Supprime un favori en verifiant qu'il appartient au user courant.
 app.delete('/favorites/:id', async (req, res) => {
   const userId = req.user?.sub;
   const favoriteId = Number(req.params.id);
@@ -125,6 +131,7 @@ app.delete('/favorites/:id', async (req, res) => {
   }
 });
 
+// Cree une alerte temperature pour une ville donnee.
 app.post('/alerts', async (req, res) => {
   const userId = req.user?.sub;
   const city = typeof req.body.city === 'string' ? req.body.city.trim() : '';
@@ -158,6 +165,7 @@ app.post('/alerts', async (req, res) => {
   }
 });
 
+// Liste les alertes de l'utilisateur connecte.
 app.get('/alerts', async (req, res) => {
   const userId = req.user?.sub;
 
@@ -176,6 +184,7 @@ app.get('/alerts', async (req, res) => {
   }
 });
 
+// Endpoint de sante pour supervision du service preferences.
 app.get('/health', (req, res) => {
   const status = mysqlConnected ? 'ok' : 'degraded';
 
@@ -191,6 +200,7 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Demarre le serveur HTTP quand le fichier est lance directement.
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`${SERVICE_NAME} service running on port ${PORT}`);

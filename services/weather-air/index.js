@@ -12,12 +12,14 @@ const WEATHER_AIR_USE_MOCK = String(process.env.WEATHER_AIR_USE_MOCK || 'true') 
 const UNSPLASH_API_URL = process.env.UNSPLASH_API_URL || 'https://api.unsplash.com/photos/random';
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY || '';
 
+// Active CORS pour les appels frontend.
 app.use(
   cors({
     origin: CORS_ORIGIN,
   })
 );
 
+// Endpoint de sante pour supervision du service weather-air.
 app.get('/health', (req, res) => {
   res.json({
     service: SERVICE_NAME,
@@ -26,10 +28,12 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Construit une image de secours si Unsplash n'est pas disponible.
 function buildFallbackCityImage(city) {
   return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)}`;
 }
 
+// Construit une reponse air degradee en mode fallback.
 async function buildAirDegradedResponse(city, message) {
   return {
     source: 'fallback',
@@ -45,6 +49,7 @@ async function buildAirDegradedResponse(city, message) {
   };
 }
 
+// Construit une reponse heure degradee en mode fallback.
 function buildTimeDegradedResponse(city, message) {
   return {
     source: 'fallback',
@@ -58,6 +63,7 @@ function buildTimeDegradedResponse(city, message) {
   };
 }
 
+// Tente de recuperer une image de ville via Unsplash.
 async function getCityImage(city) {
   if (!UNSPLASH_ACCESS_KEY) {
     return buildFallbackCityImage(city);
@@ -82,6 +88,7 @@ async function getCityImage(city) {
   }
 }
 
+// Retourne la meteo air (mock ou API externe), avec fallback en cas d'erreur.
 app.get('/air', async (req, res) => {
   const city = typeof req.query.city === 'string' ? req.query.city.trim() : '';
 
@@ -145,6 +152,7 @@ app.get('/air', async (req, res) => {
   }
 });
 
+// Retourne le fuseau/localTime (mock ou API externe), avec fallback.
 app.get('/time', async (req, res) => {
   const city = typeof req.query.city === 'string' ? req.query.city.trim() : '';
 
@@ -198,6 +206,7 @@ app.get('/time', async (req, res) => {
   }
 });
 
+// Demarre le serveur HTTP quand le fichier est lance directement.
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`${SERVICE_NAME} service running on port ${PORT}`);

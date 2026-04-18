@@ -12,12 +12,14 @@ const WEATHER_WATER_USE_MOCK = String(process.env.WEATHER_WATER_USE_MOCK || 'tru
 const UNSPLASH_API_URL = process.env.UNSPLASH_API_URL || 'https://api.unsplash.com/photos/random';
 const UNSPLASH_ACCESS_KEY = process.env.UNSPLASH_ACCESS_KEY || '';
 
+// Active CORS pour les appels frontend.
 app.use(
   cors({
     origin: CORS_ORIGIN,
   })
 );
 
+// Endpoint de sante pour supervision du service weather-water.
 app.get('/health', (req, res) => {
   res.json({
     service: SERVICE_NAME,
@@ -26,10 +28,12 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Construit une image de secours orientee eau.
 function buildFallbackCityImage(city) {
   return `https://source.unsplash.com/1600x900/?${encodeURIComponent(city)},water`;
 }
 
+// Construit une reponse eau degradee en mode fallback.
 async function buildWaterDegradedResponse(city, message) {
   return {
     source: 'fallback',
@@ -45,6 +49,7 @@ async function buildWaterDegradedResponse(city, message) {
   };
 }
 
+// Cherche une temperature d'eau dans plusieurs zones de la reponse API.
 function pickWaterTemperatureC(data) {
   const direct = data?.current?.water_temp_c;
   if (Number.isFinite(direct)) {
@@ -69,6 +74,7 @@ function pickWaterTemperatureC(data) {
   return null;
 }
 
+// Estime une temperature d'eau a partir de la moyenne jour si necessaire.
 function pickEstimatedWaterTemperatureC(data) {
   const fromDayAvg = data?.forecast?.forecastday?.[0]?.day?.avgtemp_c;
   if (Number.isFinite(fromDayAvg)) {
@@ -78,6 +84,7 @@ function pickEstimatedWaterTemperatureC(data) {
   return null;
 }
 
+// Tente de recuperer une image de ville/eau via Unsplash.
 async function getCityImage(city) {
   if (!UNSPLASH_ACCESS_KEY) {
     return buildFallbackCityImage(city);
@@ -102,6 +109,7 @@ async function getCityImage(city) {
   }
 }
 
+// Retourne la meteo eau (mock ou API externe), avec fallback degrade.
 app.get('/water', async (req, res) => {
   const city = typeof req.query.city === 'string' ? req.query.city.trim() : '';
 
@@ -200,6 +208,7 @@ app.get('/water', async (req, res) => {
   }
 });
 
+// Demarre le serveur HTTP quand le fichier est lance directement.
 if (require.main === module) {
   app.listen(PORT, () => {
     console.log(`${SERVICE_NAME} service running on port ${PORT}`);
